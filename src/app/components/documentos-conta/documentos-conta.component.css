@@ -1,0 +1,37 @@
+.tab-wraper{
+  display: flex;
+  justify-content: end;
+  padding: 10px;
+}
+
+i{
+  font-size: 24px;
+}
+
+table {
+  width: 100%;
+}
+
+th{
+  border-bottom: 1px solid #aaaaaa;
+}
+
+td{
+  text-transform: uppercase;
+}
+
+#i-arquivo{
+  color: rgb(27, 47, 51);
+}
+
+#errovalidacao{
+  color: rgb(184, 48, 48);
+}
+
+#naovalidado{
+  color:#868686
+}
+
+#validado{
+  color: green;
+}

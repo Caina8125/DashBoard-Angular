@@ -1,0 +1,194 @@
+<body [ngClass]="modoEscuroTelaUpload ? 'dark-theme' : ''">
+  <div class="container">
+    <div class="row">
+      <div class="col d-flex">
+        <div class="fs-2">
+          <a (click)="this.voltar()">
+            <i class="bi bi-arrow-left"></i>
+          </a>
+        </div>
+        <h1 class="text-center mt-2 ms-2">Início</h1>
+      </div>
+      <div class="col text-end">
+        <button class="btn mb-1 mt-2" (click)="open(uploadModal)" id="btn">
+          Upload
+          <i class="bi bi-cloud-upload"></i>
+        </button>
+        <div class="mt-2">
+          <app-spinner></app-spinner>
+        </div>
+        <ng-template #uploadModal let-modal>
+          <div class="modal-header">
+            <h4 class="modal-title" id="modal-basic-title">
+              Upload de arquivos
+            </h4>
+            <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+          </div>
+          <div class="modal-body text-center" id="modal">
+            <form (ngSubmit)="onUploadPDFHome()" [formGroup]="formUpload" *ngIf="this.unidadeAtendimento == 3">
+              <div class="mb-3">
+                <label for="customFile" id="customFileLabel">Arquivo</label>
+                <div class="input-group">
+                  <input type="file" class="form-control" id="customFile" (change)="onChange($event)"/>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <div>
+                    <label class="form-label">Selecione o tipo de mapa:</label>
+                  </div>
+                  <mat-radio-group formControlName="tipoMapa">
+                    <mat-radio-button value="0" id="form-label">
+                      Centro Cirurgico
+                    </mat-radio-button>
+                    <mat-radio-button value="1" id="form-label">
+                      Internação
+                    </mat-radio-button>
+                  </mat-radio-group>
+                </div>
+              </div>
+            <button type="submit" class="btn btn-outline-dark" [disabled]="!this.file" *ngIf="unidadeAtendimento == 3">
+              Salvar
+            </button>
+          </form>
+          <div class="mb-3" *ngIf="this.unidadeAtendimento != 3">
+            <label for="customFile" id="customFileLabel">Arquivo</label>
+            <div class="input-group">
+              <input type="file" class="form-control" id="customFile" (change)="onChange($event)"/>
+            </div>
+          </div>
+
+            <button type="submit" class="btn btn-outline-dark" (click)="onUploadCSV()"[disabled]="!this.file" *ngIf="this.unidadeAtendimento == 8 || this.unidadeAtendimento == 11">
+              Salvar
+            </button>
+
+            <button type="submit" class="btn btn-outline-dark" (click)="onUploadCSVSantaLucia()" [disabled]="!this.file" *ngIf="this.unidadeAtendimento == 4 || this.unidadeAtendimento == 2">
+              Salvar
+            </button>
+
+            <button type="submit" class="btn btn-outline-dark" (click)="onUploadPDF()" [disabled]="!this.file" *ngIf="this.unidadeAtendimento == 1">
+              Salvar
+            </button>
+
+            <button type="submit" class="btn btn-outline-dark" (click)="onUploadCSVRedeDor()" [disabled]="!this.file" *ngIf="redeDor.includes(unidadeAtendimento)">
+              Salvar
+            </button>
+
+            <button type="submit" class="btn btn-outline-dark" (click)="onUploadCSVGama()" [disabled]="!this.file" *ngIf="this.unidadeAtendimento == 12">
+              Salvar
+            </button>
+          </div>
+        </ng-template>
+
+      </div>
+    </div>
+
+    <!-- Tabela com os dados do upload -->
+    <h1 class="text-center mt-2">UPLOAD</h1>
+    <mat-tab-group>
+      <mat-tab *ngIf="this.unidadeAtendimento == 8 || this.unidadeAtendimento == 4 || this.unidadeAtendimento == 11 || this.unidadeAtendimento == 2 || this.unidadeAtendimento == 12 || this.unidadeAtendimento == 3 || redeDor.includes(this.unidadeAtendimento)">
+          <span id="label">
+            <ng-template mat-tab-label>
+              Inclusões ({{ this.totalInclusoes }})
+            </ng-template>
+          </span>
+            <table mat-table [dataSource]="dataSourceInclusoes">
+              <ng-container matColumnDef="atendimento">
+                <th mat-header-cell *matHeaderCellDef class="text-center">ATENDIMENTO</th>
+                <td mat-cell *matCellDef="let paciente" class="text-center">{{ paciente.body.nroRegistroAtendimento }}</td>
+              </ng-container>
+              <ng-container matColumnDef="nomePaciente">
+                <th mat-header-cell *matHeaderCellDef class="text-center">PACIENTE</th>
+                <td mat-cell *matCellDef="let paciente" class="text-center">{{ paciente.body.paciente }}</td>
+              </ng-container>
+              <ng-container matColumnDef="Editar">
+                <th mat-header-cell *matHeaderCellDef class="text-center">EDITAR</th>
+                <td mat-cell *matCellDef="let paciente" class="text-center">
+                  <i class="bi bi-pencil-square fs-5"
+                  [routerLink]="['/criar-internacao']"
+                  [queryParams]="{ unidadeAtendimento: unidadeAtendimento,idEvolucao:7, nroRegistro: paciente.body.nroRegistroAtendimento }"
+                  ></i>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="colunasTabelaUpload"></tr>
+              <tr mat-row *matRowDef="let row; columns: colunasTabelaUpload"></tr>
+            </table>
+      </mat-tab>
+
+      <mat-tab label="Alta ({{ totalAlta }}) " *ngIf="this.unidadeAtendimento == 1 || this.unidadeAtendimento == 2 || this.unidadeAtendimento == 12 || this.unidadeAtendimento == 3">
+          <table mat-table [dataSource]="dataSourceAoCarregarAlta">
+            <ng-container matColumnDef="atendimento">
+              <th mat-header-cell *matHeaderCellDef class="text-center">ATENDIMENTO</th>
+              <td mat-cell *matCellDef="let paciente" class="text-center">{{ paciente.body.nroRegistroAtendimento }}</td>
+            </ng-container>
+            <ng-container matColumnDef="nomePaciente">
+              <th mat-header-cell *matHeaderCellDef class="text-center">PACIENTE</th>
+              <td mat-cell *matCellDef="let paciente" class="text-center">{{ paciente.body.paciente }}</td>
+            </ng-container>
+            <ng-container matColumnDef="Editar">
+              <th mat-header-cell *matHeaderCellDef class="text-center">EDITAR</th>
+              <td mat-cell *matCellDef="let paciente" class="text-center">
+                <i class="bi bi-pencil-square fs-5"
+                [routerLink]="['/criar-internacao']"
+                [queryParams]="{ unidadeAtendimento: unidadeAtendimento,idEvolucao:1, nroRegistro: paciente.body.nroRegistroAtendimento }"
+                ></i>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="colunasTabelaUpload"></tr>
+            <tr mat-row *matRowDef="let row; columns: colunasTabelaUpload"></tr>
+          </table>
+      </mat-tab>
+
+      <mat-tab label="Parciais ({{ totalParciais }})" >
+          <table mat-table [dataSource]="dataSourceParciais">
+            <ng-container matColumnDef="atendimento">
+              <th mat-header-cell *matHeaderCellDef class="text-center">ATENDIMENTO</th>
+              <td mat-cell *matCellDef="let paciente" class="text-center">{{ paciente.body.nroRegistroAtendimento }}</td>
+            </ng-container>
+            <ng-container matColumnDef="nomePaciente">
+              <th mat-header-cell *matHeaderCellDef class="text-center">PACIENTE</th>
+              <td mat-cell *matCellDef="let paciente" class="text-center">{{ paciente.body.paciente }}</td>
+            </ng-container>
+            <ng-container matColumnDef="Editar">
+              <th mat-header-cell *matHeaderCellDef class="text-center">EDITAR</th>
+              <td mat-cell *matCellDef="let paciente" class="text-center">
+                <i class="bi bi-pencil-square fs-5"
+                [routerLink]="['/criar-internacao']"
+                [queryParams]="{ unidadeAtendimento: unidadeAtendimento,idEvolucao:3, nroRegistro: paciente.body.nroRegistroAtendimento }"
+                ></i>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="colunasTabelaUpload"></tr>
+            <tr mat-row *matRowDef="let row; columns: colunasTabelaUpload"></tr>
+          </table>
+      </mat-tab>
+
+      <mat-tab label="Não Encontrados ({{ totalNaoEncontrado }})" *ngIf="this.unidadeAtendimento == 8 || this.unidadeAtendimento == 11">
+          <table mat-table [dataSource]="dataSourceNaoLocalizados">
+            <ng-container matColumnDef="atendimento">
+              <th mat-header-cell *matHeaderCellDef class="text-center">ATENDIMENTO</th>
+              <td mat-cell *matCellDef="let paciente" class="text-center">{{ paciente.body.nroRegistroAtendimento }}</td>
+            </ng-container>
+            <ng-container matColumnDef="nomePaciente">
+              <th mat-header-cell *matHeaderCellDef class="text-center">PACIENTE</th>
+              <td mat-cell *matCellDef="let paciente" class="text-center">{{ paciente.body.paciente }}</td>
+            </ng-container>
+            <ng-container matColumnDef="Editar">
+              <th mat-header-cell *matHeaderCellDef class="text-center">EDITAR</th>
+              <td mat-cell *matCellDef="let paciente" class="text-center">
+                <i class="bi bi-pencil-square fs-5"
+                [routerLink]="['/criar-internacao']"
+                [queryParams]="{ unidadeAtendimento: unidadeAtendimento,idEvolucao:5, nroRegistro: paciente.body.nroRegistroAtendimento }"
+                ></i>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="colunasTabelaUpload"></tr>
+            <tr mat-row *matRowDef="let row; columns: colunasTabelaUpload"></tr>
+          </table>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</body>

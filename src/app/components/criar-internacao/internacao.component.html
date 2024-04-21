@@ -1,0 +1,259 @@
+<body [ngClass]="modoEscuroCriarInternacao ? 'dark-theme' :''">
+  <div class="container">
+    <div class="row">
+      <div class="col d-flex">
+        <div class="fs-2">
+          <a (click)="voltar()">
+            <i class="bi bi-arrow-left"></i>
+          </a>
+        </div>
+        <h1 class="text-center mt-2 ms-2">Início</h1>
+      </div>
+    </div>
+    <div class="card p-2 mb-2" id="card">
+      <form>
+        <div class="row">
+          <div class="col-11 fs-5 mb-2">
+            <div class="d-flex justify-content-center">
+              <span class="text">Internação</span>
+            </div>
+          </div>
+          <div class="col-1 fs-4 mb-2">
+            <div class="d-flex justify-content-end">
+              <span class="icon">
+                <i class="bi bi-clock-history" (click)="open(historico)"></i>
+              </span>
+            </div>
+            <ng-template #historico>
+              <app-historico-internacao [idInternacao]="this.idInternacao" [unidadeAtendimento]="this.unidadeAtendimento"></app-historico-internacao>
+            </ng-template>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <label class="form-label"> Registro Atendimento </label>
+            <div class="input-group">
+              <input type="text" class="form-control" [(ngModel)]="nroRegistroAtendimento" name="nroRegistroAtendimento"/>
+              <button class="btn btn-outline-secondary" type="button" (click)="localizarInternacao()">
+                <i class="bi bi-search" id="lupa"></i>
+              </button>
+            </div>
+          </div>
+          <div class="col">
+            <label class="form-label">Paciente</label>
+            <input type="text" class="form-control" [(ngModel)]="paciente" name="paciente"/>
+          </div>
+          <div class="col">
+            <label class="form-label"> Evolução </label>
+            <select class="form-select" [(ngModel)]="idEvolucao" name="idEvolucao" [disabled]="this.unidadeAtendimento == 4 || this.unidadeAtendimento == 2">
+              <option *ngFor="let e of Evolucao" [ngValue]="e.id">
+                {{ e.nome }}
+              </option>
+            </select>
+          </div>
+          <div class="col">
+            <label class="form-label">Operadora</label>
+            <div class="input-group">
+              <select class="form-select" [(ngModel)]="idOperadora" name="idOperadora" (ngModelChange)="valorIdOperadora()">
+                <option *ngFor="let o of Operadora" [ngValue]="o.id">
+                  {{ o.apelido }}
+                </option>
+              </select>
+              <button class="btn btn-outline-secondary" (click)="open(criarOperadora)" id="btn-modal">
+                +
+              </button>
+              <ng-template #criarOperadora let-modal>
+                <div class="modal-header">
+                  <h4 class="modal-title" id="modal-basic-title">
+                    Criar Operadora
+                  </h4>
+                  <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+                </div>
+                <div class="modal-body">
+                  <form (ngSubmit)="criaOperadora()" class="text-center">
+                    <label class="form-label">Código Operadora</label>
+                    <select class="form-select" [(ngModel)]="idNovaOperadora" name="idNovaOperadora">
+                      <option *ngFor="let o of operadoras" [ngValue]="o.id">
+                        {{ o.apelido }}
+                      </option>
+                    </select>
+
+                    <label class="form-label">Código Externo</label>
+                    <input class="form-control" type="text" [(ngModel)]="codigoExterno" name="codigoExterno">
+
+                    <label class="form-label">Código Interno</label>
+                    <input class="form-control" type="text" [(ngModel)]="codigoInterno" name="codigoInterno">
+
+                    <label class="form-label">Apelido</label>
+                    <input class="form-control" type="text" [(ngModel)]="apelido" name="apelido">
+
+                    <div class="col" *ngIf="this.unidadeAtendimento == 8 || this.unidadeAtendimento == 11">
+                      <label class="form-label">Via de cobrança</label>
+                      <select class="form-select" [(ngModel)]="viaCobranca" name="viaCobranca">
+                        <option *ngFor="let o of viaCobrancas" [ngValue]="o.id">
+                          {{ o.name }}
+                        </option>
+                      </select>
+                    </div>
+
+                    <button class="btn btn-success mt-2" type="submit" >
+                      Salvar
+                    </button>
+                  </form>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+          <div class="col" *ngIf="this.unidadeAtendimento == 8 || this.unidadeAtendimento == 11 || this.unidadeAtendimento == 4 || this.unidadeAtendimento == 2">
+            <label>Acomodação</label>
+            <select class="form-select mt-2" [(ngModel)]="acomodacao" name="acomodacao">
+              <option *ngFor="let a of Acomodacao" [ngValue]="a.id">{{a.nome}}</option>
+              <option *ngIf="this.unidadeAtendimento == 11" value="7">UTI A</option>
+              <option *ngIf="this.unidadeAtendimento == 11" value="8">UTI B</option>
+              <option *ngIf="this.unidadeAtendimento == 11" value="9">UTI C</option>
+              <option *ngIf="this.unidadeAtendimento == 8" value="10">UTI B2</option>
+              <option *ngIf="this.unidadeAtendimento == 8" value="11">UTI B3</option>
+              <option *ngIf="this.unidadeAtendimento == 8" value="12">UTI C1</option>
+              <option *ngIf="this.unidadeAtendimento == 8" value="13">UTI C2</option>
+              <option *ngIf="this.unidadeAtendimento == 8" value="14">UTI C3</option>
+            </select>
+          </div>
+          <div class="col" *ngIf="this.unidadeAtendimento == 8 || this.unidadeAtendimento == 11 || this.unidadeAtendimento == 4 || this.unidadeAtendimento == 2">
+            <label class="form-label" >Nro. Acomodação</label>
+            <input type="text" class="form-control" [(ngModel)]="nroAcomodacao" name="nroAcomodacao">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <label class="form-label">Data Inicial</label>
+            <input type="text" class="form-control" [(ngModel)]="dataInicial" name="dataInicial" [textMask]="{ mask: data }" />
+          </div>
+          <div class="col">
+            <label class="form-label">Hora Inicial</label>
+            <input type="text" class="form-control" [(ngModel)]="horaInicial" name="horaInicial" [textMask]="{ mask:hora }"/>
+          </div>
+          <div class="col">
+            <label class="form-label">Data Final</label>
+            <input type="text" class="form-control" [(ngModel)]="dataFinal" name="dataFinal" [textMask]="{ mask: data }"/>
+          </div>
+          <div class="col">
+            <label class="form-label">Hora Final</label>
+            <input type="text" class="form-control" [(ngModel)]="horaFinal" name="horaFinal" [textMask]="{ mask:hora }"/>
+          </div>
+          <div class="col">
+            <label class="form-label">Data Criação</label>
+            <input type="text" class="form-control" [(ngModel)]="dataCriacao" name="dataCriacao" [textMask]="{ mask: data }"/>
+          </div>
+          <div class="col">
+            <label class="form-label">Status Internação</label>
+            <select class="form-select" [(ngModel)]="statusInternacao" name="statusInternacao">
+              <option value="1">AMHP</option>
+              <option value="2">HOSPITAL</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <div class="text-center">
+              <button class="btn m-2" type="submit" id="btn-salvar" (click)="criarInternacao()" [disabled]="isBotaoDesabilitado">
+                Salvar
+              </button>
+              <button class="btn btn-secondary m-2" (click)="limpar()">
+                Limpar
+              </button>
+              <button class="btn" *ngIf="this.unidadeAtendimento == 11 || this.unidadeAtendimento == 8" id="btn-conta" (click)="gerarAdimissao()">
+                Admissão
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="card p-2" id="card">
+      <div class="row">
+        <div class="col-10 text-center">
+          <b class="textoContas">Contas Vinculadas a essa internação</b>
+        </div>
+        <div class="col-2 text-end">
+          <button (click)="verificaOperadora()" class="btn text-center" id="btn-conta">
+            Criar Conta
+          </button>
+        </div>
+      </div>
+      <table mat-table [dataSource]="dataSourceContas">
+        <ng-container matColumnDef="atendimento">
+          <th mat-header-cell *matHeaderCellDef class="text-center">
+            Atendimento
+          </th>
+          <td mat-cell *matCellDef="let paciente" class="text-center">
+            {{ paciente.internacaoObject.registroAtendimentoObject.nroRegistroAtendimento }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="nroConta">
+          <th mat-header-cell *matHeaderCellDef class="text-center">
+            Número Conta
+          </th>
+          <td mat-cell *matCellDef="let paciente" class="text-center">
+            {{ paciente.numeroConta }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="paciente">
+          <th mat-header-cell *matHeaderCellDef class="text-center">
+            Paciente
+          </th>
+          <td mat-cell *matCellDef="let paciente" class="text-center">
+            {{ paciente.internacaoObject.registroAtendimentoObject.paciente }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="convenio">
+          <th mat-header-cell *matHeaderCellDef class="text-center">
+            Convênio
+          </th>
+          <td mat-cell *matCellDef="let paciente" class="text-center">
+            {{ paciente.unidadeOperadoraObject.apelido }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="data">
+          <th mat-header-cell *matHeaderCellDef class="text-center">
+            Data Atendimento
+          </th>
+          <td mat-cell *matCellDef="let paciente" class="text-center">
+            {{ paciente.dataAtendimento | date : "dd/MM/yyyy" }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="statusConta">
+          <th mat-header-cell *matHeaderCellDef class="text-center">
+            Status Conta
+          </th>
+          <td mat-cell *matCellDef="let paciente" class="text-center">
+            {{ paciente.statusContaObject.descricao }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="statusValidade">
+          <th mat-header-cell *matHeaderCellDef class="text-center">
+            Status Validade
+          </th>
+          <td mat-cell *matCellDef="let paciente" class="text-center">
+            {{ paciente.statusValidadeObject.descricao }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="editar">
+          <th mat-header-cell *matHeaderCellDef class="text-center">Editar</th>
+          <td mat-cell *matCellDef="let paciente" class="text-center">
+            <i class="bi bi-pencil-square fs-5" [routerLink]="['/criar-conta']" [queryParams]="{ unidadeAtendimento: unidadeAtendimento, nroConta: paciente.numeroConta,idUsuario:idUsuario}"></i>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="colunasContas"></tr>
+        <tr mat-row *matRowDef="let row; columns: colunasContas"></tr>
+      </table>
+    </div>
+  </div>
+</body>

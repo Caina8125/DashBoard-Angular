@@ -1,0 +1,48 @@
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col mt-5">
+        <mat-accordion>
+          <mat-expansion-panel class="shadow-lg">
+            <mat-expansion-panel-header>
+              <mat-panel-title class="fs-4">Excluir Operadora</mat-panel-title>
+            </mat-expansion-panel-header>
+            <form class="text-center" (ngSubmit)="removerUsuario()">
+              <label class="form-label fs-5">Operadoras</label>
+              <select class="form-select w-50" [(ngModel)]="usuario" name="usuario">
+                <option *ngFor="let o of operadoras" [ngValue]="o.id">
+                  {{ o.nome }}
+                </option>
+              </select>
+              <button class="btn btn-secondary mt-3">Apagar</button>
+            </form>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel class="mt-5 shadow-lg">
+            <mat-expansion-panel-header>
+              <mat-panel-title class="fs-4">Adicionar Operadora</mat-panel-title>
+            </mat-expansion-panel-header>
+            <form class="text-center" (ngSubmit)="adicionarOperadora()">
+              <label class="fs-5 mb-2" for="nome">Nome</label>
+              <input type="text" class="form-control w-50 mb-3" id="nome" [(ngModel)]="nome" name="nome">
+
+              <label class="fs-5 mb-2" for="apelido">Apelido</label>
+              <input type="text" class="form-control w-50 mb-3" id="apelido" [(ngModel)]="apelido" name="apelido">
+
+              <label class="fs-5 mb-2" for="validade">Validade</label>
+              <input type="number" class="form-control w-50 mb-3" id="validade" [(ngModel)]="validade" name="validade">
+
+              <label class="form-label fs-5">Tipo Envio</label>
+              <select class="form-select w-50" [(ngModel)]="idTipoEnvio" name="idTipoEnvio">
+                <option *ngFor="let o of tipoEnvio" [ngValue]="o.id">
+                  {{ o.nome }}
+                </option>
+              </select>
+              <button class="btn btn-success mt-3">Salvar</button>
+            </form>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>
+    </div>
+  </div>
+</body>

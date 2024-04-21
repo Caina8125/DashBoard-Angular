@@ -1,0 +1,18 @@
+<body>
+  <div class="tudo">
+    <div id="mySidenav" class="sidenav">
+      <button class="btn" (click)="usuarios()">Usuários</button>
+      <button class="btn" (click)="operadoras()">Operadoras</button>
+      <!-- <a href="#">Serviços</a>
+      <a href="#">Acomodações</a>
+      <a href="#">Motivo Pendências</a> -->
+    </div>
+    <div id="main" *ngIf="this.admin">
+      <p class="text-center">
+        <img src="../../../assets/imagens/logo.png" alt="Logo Censo">
+      </p>
+    </div>
+    <app-usuarios id="main" *ngIf="this.usuario"></app-usuarios>
+    <app-operadoras id="main" *ngIf="this.operadora" ></app-operadoras>
+  </div>
+</body>

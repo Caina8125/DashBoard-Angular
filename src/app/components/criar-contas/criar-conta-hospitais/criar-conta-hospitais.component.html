@@ -1,0 +1,728 @@
+<body [ngClass]="modoEscuroCriarConta ? 'dark-theme' :''">
+  <div class="container">
+    <div class="row">
+      <div class="col d-flex">
+        <div class="fs-2">
+          <a (click)="voltar()">
+            <i class="bi bi-arrow-left"></i>
+          </a>
+        </div>
+        <h1 class="text-center mt-2 ms-2">Início</h1>
+      </div>
+    </div>
+    <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
+      <mat-tab label="Conta">
+        <form class="card mt-3 p-4" id="card">
+          <div class="row">
+            <div class="col-11 fs-4 d-flex justify-content-center">
+              <b class="text">Conta</b>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <label class="form-label">Operadora</label>
+              <select class="form-select" [(ngModel)]="idOperadora" name="idOperadora">
+                <option *ngFor="let o of operadoras" [ngValue]="o.id">
+                  {{ o.apelido }}
+                </option>
+              </select>
+            </div>
+            <div class="col">
+              <label class="form-label">Via de Cobrança</label>
+              <select class="form-select" [(ngModel)]="localConta" name="idViaCobranca">
+                <option *ngFor="let via of viasDeCobranca" [ngValue]="via.id">
+                  {{ via.descricao }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Santa Marta e Home -->
+            <div class="col" *ngIf="this.unidadeAtendimento == 1 || this.unidadeAtendimento == 3">
+              <div>
+                <label class="form-label">Local Checklist</label>
+              </div>
+              <select class="form-select" [(ngModel)]="idLocalCheklist" name="idLocalCheklist">
+                <option *ngFor="let l of LocalChecklist" [ngValue]="l.id">
+                  {{ l.nome }}
+                </option>
+              </select>
+            </div>
+            <!-- ______________________________________________________________________________________________ -->
+            <div class="col">
+              <div>
+                <label class="form-label">Status da conta</label>
+                <select class="form-select" [(ngModel)]="idStatusConta" name="idStatusConta">
+                  <option *ngFor="let s of statusDaConta" [ngValue]="s.id">
+                    {{ s.descricao }}
+                  </option>
+                </select>
+              </div>
+            </div>
+            <div class="col">
+              <label class="form-label">Data Criação</label>
+              <input type="text" class="form-control" [(ngModel)]="dataCriacao" name="dataCriacao" [textMask]="{ mask: data }"/>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <label class="form-label"> Número da conta </label>
+              <input type="text" class="form-control" [(ngModel)]="numeroConta" name="numeroConta"/>
+            </div>
+            <div class="col">
+              <label class="form-label">Registro</label>
+              <input type="text" class="form-control" [(ngModel)]="registro" name="registro"/>
+            </div>
+            <div class="col">
+              <label class="form-label">Data Atendimento</label>
+              <input type="text" class="form-control" [(ngModel)]="dataAtendimento" name="dataAtendimento" (blur)="calcularData()" [textMask]="{ mask: data }" required/>
+            </div>
+            <div class="col">
+              <label class="form-label">Hora Atendimento</label>
+              <input type="time" class="form-control" [(ngModel)]="horaAtendimento" name="horaAtendimento"/>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <label class="form-label">Acomodação</label>
+              <select class="form-select" [(ngModel)]="idAcomodacao" name="idAcomodacao">
+                <option *ngFor="let a of Acomodacao" [ngValue]="a.id">
+                  {{ a.nome }}
+                </option>
+              </select>
+            </div>
+            <div class="col">
+              <label class="form-label">Número Acomodação</label>
+              <input type="text" class="form-control" [(ngModel)]="nroAcomodacao" name="nroAcomodacao"/>
+            </div>
+            <div class="col">
+              <label class="form-label"> Status Validade </label>
+              <select class="form-select" [(ngModel)]="idStatusValidade" name="idStatusValidade" disabled>
+                <option *ngFor="let s of listaStatusValidade" [ngValue]="s.id">
+                  {{ s.descricao }}
+                </option>
+              </select>
+            </div>
+            <div class="col">
+              <label class="form-label">Periodo Parcial</label>
+              <input type="text" class="form-control" [(ngModel)]="periodoParcial" name="periodoParcial"/>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-6">
+              <label class="form-label">Observação</label>
+              <textarea [(ngModel)]="observacao" name="observacao"></textarea>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <div class="text-center">
+                <button class="btn btn-success mt-2" type="submit" (click)="criarConta()">
+                  Salvar
+                </button>
+                <!-- Santa marta e Home -->
+                <button class="btn ms-2 mt-2" id="btn-cobranca" (click)="gerarCheckList()" *ngIf="this.idConta != undefined && (this.unidadeAtendimento == 1 || this.unidadeAtendimento == 3)">
+                  Gerar Checklist
+                </button>
+                <!-- ____________________________________________________________________ -->
+              </div>
+            </div>
+          </div>
+        </form>
+        <mat-tab-group class="mt-3" mat-stretch-tabs="false" mat-align-tabs="start">
+          <mat-tab label="Serviços Cobrados">
+            <div class="card mt-3" id="card">
+              <div class="text-end me-3">
+                <button class="btn fs-3" matTooltip="Vizualizar Serviços" (click)="mostraServicosInativos()">
+                  <div *ngIf="this.mostraOlho == true">
+                    <i class="bi bi-eye"></i>
+                  </div>
+                  <div *ngIf="this.mostraOlho == false">
+                    <i class="bi bi-eye-slash"></i>
+                  </div>
+                </button>
+              </div>
+              <table mat-table [dataSource]="dataSourceServicosCobrados">
+                <ng-container matColumnDef="servicos">
+                  <th mat-header-cell *matHeaderCellDef class="text-center">
+                    Serviços
+                  </th>
+                  <td mat-cell *matCellDef="let servico" class="text-center">
+                    {{ servico.servicoObject.descricao }}
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="acomodacao">
+                  <th mat-header-cell *matHeaderCellDef class="text-center">
+                    Acomodação/Equipe
+                  </th>
+                  <td mat-cell *matCellDef="let servico" class="text-center">
+                    <span *ngIf="servico.equipeCorpoClinicoObject">
+                      {{ servico.equipeCorpoClinicoObject.descricao }}
+                    </span>
+                    <span *ngIf="!servico.equipeCorpoClinicoObject">
+                      {{ servico.acomodacaoObject.descricao }}
+                    </span>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="statusCobranca">
+                  <th mat-header-cell *matHeaderCellDef class="text-center">
+                    Status Cobranca
+                  </th>
+                  <td mat-cell *matCellDef="let servico" class="text-center">
+                    {{ servico.statusCobrancaObject.descricao }}
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="dataServico" >
+                  <th mat-header-cell *matHeaderCellDef class="text-center">
+                    Data
+                  </th>
+                  <td mat-cell *matCellDef="let servico" class="text-center">
+                    <span>
+                      {{ servico.dataCentroCirurgico | date : "dd/MM/yyyy" }}
+                    </span>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="medico">
+                  <th mat-header-cell *matHeaderCellDef class="text-center">
+                    Médico
+                  </th>
+                  <td mat-cell *matCellDef="let servico" class="text-center">
+                    <span *ngIf="servico.nomeProfissional">
+                      {{ servico.nomeProfissional }}
+                    </span>
+                    <span *ngIf="!servico.nomeProfissional">
+                      -
+                    </span>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="valor">
+                  <th mat-header-cell *matHeaderCellDef class="text-center">
+                    Valor Total
+                  </th>
+                  <td mat-cell *matCellDef="let plantao" class="text-center">
+                    <span *ngIf="plantao.servicoValorado">
+                      R$ {{ plantao.servicoValorado.valor.ValorTotal }}
+                    </span>
+                    <span *ngIf="!plantao.servicoValorado">
+                      -
+                    </span>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="editar">
+                  <th mat-header-cell *matHeaderCellDef class="text-center">
+                    Editar
+                  </th>
+                  <td mat-cell *matCellDef="let servico" class="text-center">
+                    <button class="btn fs-4" (click)="open(statusServicoModal)">
+                      <i class="bi bi-pencil-square"></i>
+                    </button>
+                    <ng-template #statusServicoModal let-modal>
+                      <div class="modal-header">
+                        <h4 class="modal-title" id="modal-basic-title">
+                          Edição de serviços
+                        </h4>
+                        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+                      </div>
+                      <div class="p-5">
+                        <label class="form-label">Status Serviço</label>
+                        <select class="form-select" [(ngModel)]="statusServico" name="statusServico">
+                          <option *ngFor="let c of StatusCobranca" [ngValue]="c.id">
+                            {{ c.nome }}
+                          </option>
+                        </select>
+                        <div class="text-center">
+                          <button class="btn w-75 m-3" id="btn-cobranca" (click)="atualizaStatusServico(servico.id,servico.servicoObject.descricao)">
+                            Salvar Status do Serviço
+                          </button>
+                        </div>
+                      </div>
+                    </ng-template>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="limpar">
+                  <th mat-header-cell *matHeaderCellDef class="text-center">
+                    <span class="Inativos" *ngIf="this.mostraOlho == false">
+                      Serviços Inativos
+                    </span>
+                  </th>
+                  <td mat-cell *matCellDef="let servico" class="text-center">
+                    <button class="btn fs-4" (click)="trocaValorAtivo(servico.id,servico.inativo,servico.servicoObject.descricao)">
+                      <i class="bi bi-x-circle" *ngIf="this.mostraOlho == true" id="icone-x"></i>
+                      <i class="bi bi-check-circle" *ngIf="this.mostraOlho == false" id="icone-check"></i>
+                    </button>
+                  </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="colunasServicos"></tr>
+                <tr mat-row *matRowDef="let row; columns: colunasServicos"></tr>
+              </table>
+            </div>
+          </mat-tab>
+          <mat-tab label="Guias">
+            <table mat-table [dataSource]="dataSourceGuias">
+              <ng-container matColumnDef="numeroGuia">
+                <th mat-header-cell *matHeaderCellDef class="text-center" id="guia">
+                  Número Guia
+                </th>
+                <td mat-cell *matCellDef="let plantao" class="text-center">
+                  {{ plantao.Id }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="nomeBeneficiario">
+                <th mat-header-cell *matHeaderCellDef class="text-center">
+                  Nome Beneficiário
+                </th>
+                <td mat-cell *matCellDef="let plantao" class="text-center">
+                  {{ plantao.NomeBeneficiario }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="prontuario">
+                <th mat-header-cell *matHeaderCellDef class="text-center">
+                  Prontuario
+                </th>
+                <td mat-cell *matCellDef="let plantao" class="text-center">
+                  {{ plantao.Prontuario }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="tipoGuia">
+                <th mat-header-cell *matHeaderCellDef class="text-center">
+                  Tipo Guia
+                </th>
+                <td mat-cell *matCellDef="let plantao" class="text-center">
+                  {{ plantao.TipoGuia }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="apelido">
+                <th mat-header-cell *matHeaderCellDef class="text-center">
+                  Operadora
+                </th>
+                <td mat-cell *matCellDef="let plantao" class="text-center">
+                  {{ plantao.Apelido }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="statusAtendimento">
+                <th mat-header-cell *matHeaderCellDef class="text-center">
+                  Status Guia
+                </th>
+                <td mat-cell *matCellDef="let plantao" class="text-center">
+                  {{ plantao.StatusAtendimentoDisplay }}
+                </td>
+              </ng-container>
+
+              <!-- Santa Marta devolução CMB -->
+              <ng-container matColumnDef="devolver">
+                <th mat-header-cell *matHeaderCellDef class="text-center">
+                  <p *ngIf="this.codigoConvenio == 375 && this.unidadeAtendimento == 1">Alterar Status</p>
+                </th>
+                <td mat-cell *matCellDef="let plantao" class="text-center">
+                  <button class="btn" id="btn-cobranca" *ngIf="this.codigoConvenio == 375 && this.unidadeAtendimento == 1" (click)="trocarStatusGuia(plantao.Id)">
+                    <i class="bi bi-arrow-left-right"></i>
+                  </button>
+                  <span class="ms-3 mt-5">
+                    <app-spinner></app-spinner>
+                  </span>
+                </td>
+              </ng-container>
+              <!-- _________________________________________________________________________________________ -->
+              <tr mat-header-row *matHeaderRowDef="colunasGuias"></tr>
+              <tr mat-row *matRowDef="let row; columns: colunasGuias"></tr>
+            </table>
+          </mat-tab>
+          <mat-tab label="Centro Cirúrgico">
+            <div class="text-end me-3">
+              <button class="btn fs-3" (click)="mostraCorpoClinicoInativos()">
+                <div *ngIf="this.mostraOlhoCorpoClinico == true">
+                  <i class="bi bi-eye"></i>
+                </div>
+                <div *ngIf="this.mostraOlhoCorpoClinico == false">
+                  <i class="bi bi-eye-slash"></i>
+                </div>
+              </button>
+            </div>
+            <table mat-table [dataSource]="dataSourceCorpoClinico">
+              <ng-container matColumnDef="grauParticipacao">
+                <th mat-header-cell *matHeaderCellDef class="text-center">
+                  Grau Participação
+                </th>
+                <td mat-cell *matCellDef="let corpo_clinico" class="text-center">
+                  {{ corpo_clinico.grauParticipacaoObject.descricao }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="nome">
+                <th mat-header-cell *matHeaderCellDef class="text-center">
+                  Nome
+                </th>
+                <td mat-cell *matCellDef="let corpo_clinico" class="text-center">
+                  {{ corpo_clinico.profissionalObject.nome }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="equipe">
+                <th mat-header-cell *matHeaderCellDef class="text-center">
+                  Equipe
+                </th>
+                <td mat-cell *matCellDef="let corpo_clinico" class="text-center">
+                  {{ corpo_clinico.centroCirurgicoObject.equipeCorpoClinicoObject.descricao }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="data">
+                <th mat-header-cell *matHeaderCellDef class="text-center">
+                  Data
+                </th>
+                <td mat-cell *matCellDef="let corpo_clinico" class="text-center">
+                  {{ corpo_clinico.centroCirurgicoObject.dataCentroCirurgico | date : "dd/MM/yyyy" }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="limpar">
+                <th mat-header-cell *matHeaderCellDef class="text-center">
+                  <span class="Inativos" *ngIf="this.mostraOlhoCorpoClinico == false">
+                    Centro Cirúrgico Inativos
+                  </span>
+                </th>
+                <td mat-cell *matCellDef="let servico" class="text-center">
+                  <button class="btn fs-4" (click)="trocarAtivoCorpoClinico(servico.id, servico.inativo)">
+                    <i class="bi bi-x-circle" *ngIf="this.mostraOlhoCorpoClinico == true" id="icone-x"></i>
+                    <i class="bi bi-check-circle" *ngIf="this.mostraOlhoCorpoClinico == false" id="icone-check"></i>
+                  </button>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="colunasCorpoClinico"></tr>
+              <tr
+                mat-row
+                *matRowDef="let row; columns: colunasCorpoClinico"
+              ></tr>
+            </table>
+          </mat-tab>
+
+          <!-- Códigos - Santa Lucia -->
+          <mat-tab label="Codigos" *ngIf="this.unidadeAtendimento == 4 || this.unidadeAtendimento == 2">
+            <div class="card mt-3">
+              <div class="text-end me-3">
+                <button class="btn fs-3" matTooltip="Vizualizar Serviços" (click)="obterCodigosAtivosEInativos()">
+                  <div *ngIf="this.mostraOlho == true">
+                    <i class="bi bi-eye"></i>
+                  </div>
+                  <div *ngIf="this.mostraOlho == false">
+                    <i class="bi bi-eye-slash"></i>
+                  </div>
+                </button>
+              </div>
+              <table mat-table [dataSource]="dataSourceCodigos">
+                <ng-container matColumnDef="display">
+                  <th mat-header-cell *matHeaderCellDef class="text-center">
+                    Equipe/Data
+                  </th>
+                  <td mat-cell *matCellDef="let c" class="text-center">
+                    {{ c.centroCirurgicoObject.centroCirurgicoDisplay }}
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="descricao">
+                  <th mat-header-cell *matHeaderCellDef class="text-center">
+                    Código
+                  </th>
+                  <td mat-cell *matCellDef="let c" class="text-center">
+                    {{ c.descricao }}
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="icone">
+                  <th mat-header-cell *matHeaderCellDef class="text-center">
+                    <span class="Inativos" *ngIf="this.mostraOlho == false">
+                      Codigos Inativos
+                    </span>
+                  </th>
+                  <td mat-cell *matCellDef="let c" class="text-center">
+                    <button class="btn" (click)="trocarValorAtivo(c.id,c.ativo)">
+                      <i class="bi bi-x-circle fs-4" *ngIf="this.mostraOlho == true" id="icone-x"></i>
+                      <i class="bi bi-check-circle fs-4" *ngIf="this.mostraOlho == false" id="icone-check"></i>
+                    </button>
+                  </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="codigosCentroCirurgico"></tr>
+                <tr mat-row *matRowDef="let row; columns: codigosCentroCirurgico"></tr>
+              </table>
+            </div>
+          </mat-tab>
+          <mat-tab label="Documentos Conta">
+            <app-documentos-conta [numeroConta]="this.nroConta" [operadora]="this.codigoConvenio"></app-documentos-conta>
+          </mat-tab>
+        </mat-tab-group>
+      </mat-tab>
+
+      <mat-tab label="Motivo Pendência" *ngIf="idConta !== undefined">
+        <app-motivo-pendencia [idConta]="this.idConta"></app-motivo-pendencia>
+      </mat-tab>
+
+      <!-- Demais com exceção do Santa Lucia Sul -->
+      <mat-tab label="Serviços" *ngIf="this.idCobranca != undefined && this.unidadeAtendimento != 4">
+        <app-servicos-hospitais [idCobranca]="this.idCobranca" [dataAtendimento]="this.dataAtendimento" (servicosCobrados)="obterServicosEPlantoes(0,$event)"></app-servicos-hospitais>
+      </mat-tab>
+
+      <!-- Santa lucia Sul -->
+      <mat-tab label="Serviços" *ngIf="this.unidadeAtendimento == 4">
+        <!-- SERVIÇOS SANTA LUCIA SUL -->
+        <div class="card mt-3" id="card">
+          <div class="row">
+            <div class="col">
+              <div class="text-center">
+                <form (ngSubmit)="enviarPlantoesExames()">
+                  <div class="row">
+                    <div class="col mt-5">
+                      <div class="m-4">
+                        <h2 class="form-label text-center">Data Serviço</h2>
+                        <input type="date" class="form-control w-50" id="servicos__data" [(ngModel)]="dataExame" name="dataExame"/>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="m-4">
+                        <h2 class="form-label text-center mt-5">Plantões</h2>
+                        <input class="form-check-input" type="checkbox" id="flexCheckChecked" [(ngModel)]="PD" name="PD"/>
+                        <label class="form-check-label" for="flexCheckChecked">
+                          Plantão diurno
+                        </label><br />
+
+                        <input class="form-check-input" type="checkbox" id="flexCheckChecked1" [(ngModel)]="PN" name="PN"/>
+                        <label class="form-check-label" for="flexCheckChecked1">
+                          Plantão Noturno
+                        </label><br />
+
+                        <input class="form-check-input" type="checkbox" id="flexCheckChecked2" [(ngModel)]="INP" name="INP"/>
+                        <label class="form-check-label" for="flexCheckChecked2">
+                          Intensivista não plantonista
+                        </label><br />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col mt-3">
+                      <div class="m-4">
+                        <h2 class="form-label">Médico</h2>
+                        <mat-form-field class="auto-complete">
+                          <input type="text" aria-label="Number" matInput [(ngModel)]="medicoServico" name="medicoServico" [matAutocomplete]="auto" (ngModelChange)="buscaPrimeiroCirurgiao(medicoServico)"/>
+                          <mat-autocomplete #auto="matAutocomplete">
+                            <mat-option *ngFor="let option of opcoesPrimeiroCirurgiao" [value]="option">
+                              {{ option.PessoaFisica.Pessoa.NomeRazao }}
+                            </mat-option>
+                          </mat-autocomplete>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="m-4">
+                        <h2 class="form-label mt-5">Exames</h2>
+                        <mat-form-field appearance="fill" class="w-75">
+                          <mat-label>Exames</mat-label>
+                          <mat-select multiple [(ngModel)]="exames" name="exames" >
+                            <mat-option *ngFor="let exame of servicosHSL" [value]="exame">{{ exame.descricao }}</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                  </div>
+                  <button class="btn m-4" id="btn-salvar" type="submit" [disabled]="this.botaodsbld">
+                    <span *ngIf="!loadingService.getLoading()">
+                      Salvar
+                    </span>
+                    <app-spinner></app-spinner>
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Profissionais" *ngIf="this.idCobranca != undefined">
+        <div class="corpo_clinico card mt-3" id="card">
+          <div class="row p-2">
+            <h2 class="text-center">Profissionais</h2>
+            <div class="col text-center">
+              <h4 class="text-center">1° Equipe</h4>
+              <div class="text-center">
+                <mat-form-field class="auto-complete">
+                  <input type="text" aria-label="Number" placeholder="Primeiro Cirurgião" matInput [(ngModel)]="primeiroCirurgiao" name="primeiroCirurgiao" [matAutocomplete]="auto" (ngModelChange)="buscaPrimeiroCirurgiao(primeiroCirurgiao)"/>
+                  <mat-autocomplete #auto="matAutocomplete">
+                    <mat-option *ngFor="let option of opcoesPrimeiroCirurgiao" [value]="option.PessoaFisica.Pessoa.NomeRazao">
+                      {{ option.PessoaFisica.Pessoa.NomeRazao }}
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+
+                <mat-form-field class="auto-complete">
+                  <input type="text" aria-label="Number" placeholder="1º Aux" matInput [(ngModel)]="primeiroAuxEquipeUm" name="primeiroAuxEquipeUm" [matAutocomplete]="auto1"(ngModelChange)="buscaPrimeiroAuxEquipeUm(primeiroAuxEquipeUm)"/>
+                  <mat-autocomplete #auto1="matAutocomplete">
+                    <mat-option *ngFor="let option of opcoesPrimeiroAuxEquipeUm" [value]="option.PessoaFisica.Pessoa.NomeRazao">
+                      {{ option.PessoaFisica.Pessoa.NomeRazao }}
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+
+                <mat-form-field class="auto-complete">
+                  <input type="text" aria-label="Number" placeholder="2º Aux" matInput [(ngModel)]="segundoAuxEquipeUm" name="segundoAuxEquipeUm" [matAutocomplete]="auto2" (ngModelChange)="buscaSegundoAuxEquipeUm(segundoAuxEquipeUm)"/>
+                  <mat-autocomplete #auto2="matAutocomplete">
+                    <mat-option *ngFor="let option of opcoesSegundoAuxEquipeUm" [value]="option.PessoaFisica.Pessoa.NomeRazao">
+                      {{ option.PessoaFisica.Pessoa.NomeRazao }}
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+
+                <mat-form-field class="auto-complete">
+                  <input type="text" aria-label="Number" placeholder="3º Aux" matInput [(ngModel)]="terceiroAuxEquipeUm" name="terceiroAuxEquipeUm" [matAutocomplete]="auto3" (ngModelChange)="buscaTerceiroAuxEquipeUm(terceiroAuxEquipeUm)"/>
+                  <mat-autocomplete #auto3="matAutocomplete">
+                    <mat-option *ngFor="let option of opcoesTerceiroAuxEquipeUm" [value]="option.PessoaFisica.Pessoa.NomeRazao">
+                      {{ option.PessoaFisica.Pessoa.NomeRazao }}
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+
+                <mat-form-field class="auto-complete">
+                  <mat-label>Data</mat-label>
+                  <input matInput [(ngModel)]="dataCentroCirurgico1" name="dataCentroCirurgico1" [textMask]="{ mask: data }">
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="col">
+              <h4 class="text-center">2° Equipe</h4>
+                <div class="text-center">
+                  <mat-form-field class="auto-complete">
+                    <input type="text" aria-label="Number" placeholder="Primeiro Cirurgião" matInput [(ngModel)]="segundoCirurgiao" name="segundoCirurgiao" [matAutocomplete]="auto4" (ngModelChange)="buscaSegundoCirurgiao(segundoCirurgiao)"/>
+                    <mat-autocomplete #auto4="matAutocomplete">
+                      <mat-option *ngFor="let option of opcoesSegundoCirurgiao" [value]="option.PessoaFisica.Pessoa.NomeRazao">
+                        {{ option.PessoaFisica.Pessoa.NomeRazao }}
+                      </mat-option>
+                    </mat-autocomplete>
+                  </mat-form-field>
+
+                  <mat-form-field class="auto-complete">
+                  <input type="text" aria-label="Number" placeholder="1º Aux" matInput [(ngModel)]="primeiroAuxEquipeDois" name="primeiroAuxEquipeDois" [matAutocomplete]="auto5" (ngModelChange)="buscaPrimeiroAuxEquipeDois(primeiroAuxEquipeDois)"/>
+                  <mat-autocomplete #auto5="matAutocomplete">
+                    <mat-option *ngFor="let option of opcoesPrimeiroAuxEquipeDois" [value]="option.PessoaFisica.Pessoa.NomeRazao">
+                      {{ option.PessoaFisica.Pessoa.NomeRazao }}
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+
+                <mat-form-field class="auto-complete">
+                  <input type="text" aria-label="Number" placeholder="2º Aux" matInput [(ngModel)]="segundoAuxEquipeDois" name="segundoAuxEquipeDois" [matAutocomplete]="auto6" (ngModelChange)="buscaSegundoAuxEquipeDois(segundoAuxEquipeDois)"/>
+                  <mat-autocomplete #auto6="matAutocomplete">
+                    <mat-option *ngFor="let option of opcoesSegundoAuxEquipeDois" [value]="option.PessoaFisica.Pessoa.NomeRazao">
+                      {{ option.PessoaFisica.Pessoa.NomeRazao }}
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+
+                <mat-form-field class="auto-complete">
+                  <input type="text" aria-label="Number" placeholder="3º Aux" matInput [(ngModel)]="terceiroAuxEquipeDois" name="terceiroAuxEquipeDois" [matAutocomplete]="auto7" (ngModelChange)="buscaTerceiroAuxEquipeDois(terceiroAuxEquipeDois)"/>
+                  <mat-autocomplete #auto7="matAutocomplete">
+                    <mat-option *ngFor="let option of opcoesTerceiroAuxEquipeDois" [value]="option.PessoaFisica.Pessoa.NomeRazao">
+                      {{ option.PessoaFisica.Pessoa.NomeRazao }}
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+
+                <mat-form-field class="auto-complete">
+                  <mat-label>Data</mat-label>
+                  <input matInput [textMask]="{ mask: data }" [(ngModel)]="dataCentroCirurgico2" name="dataCentroCirurgico2">
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="col">
+              <h4 class="text-center">3° Equipe</h4>
+              <div class="text-center">
+                <mat-form-field class="auto-complete">
+                  <input type="text" aria-label="Number" placeholder="Primeiro Cirurgião" matInput [(ngModel)]="terceiroCirurgiao" name="terceiroCirurgiao" [matAutocomplete]="auto8" (ngModelChange)="buscaTerceiroCirurgiao(terceiroCirurgiao)" />
+                  <mat-autocomplete #auto8="matAutocomplete">
+                    <mat-option *ngFor="let option of opcoesTerceiroCirurgiao" [value]="option.PessoaFisica.Pessoa.NomeRazao">
+                      {{ option.PessoaFisica.Pessoa.NomeRazao }}
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+
+                <mat-form-field class="auto-complete">
+                  <input type="text" aria-label="Number" placeholder="1º Aux" matInput [(ngModel)]="primeiroAuxEquipeTres" name="primeiroAuxEquipeTres" [matAutocomplete]="auto9" (ngModelChange)="buscaPrimeiroAuxEquipeTres(primeiroAuxEquipeTres)"/>
+                  <mat-autocomplete #auto9="matAutocomplete">
+                    <mat-option *ngFor="let option of opcoesPrimeiroAuxEquipeTres" [value]="option.PessoaFisica.Pessoa.NomeRazao">
+                      {{ option.PessoaFisica.Pessoa.NomeRazao }}
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+
+                <mat-form-field class="auto-complete">
+                  <input type="text" aria-label="Number" placeholder="2º Aux" matInput [(ngModel)]="segundoAuxEquipeTres" name="segundoAuxEquipeTres" [matAutocomplete]="auto10" (ngModelChange)="buscaSegundoAuxEquipeTres(segundoAuxEquipeTres)"/>
+                  <mat-autocomplete #auto10="matAutocomplete">
+                    <mat-option *ngFor="let option of opcoesSegundoAuxEquipeTres" [value]="option.PessoaFisica.Pessoa.NomeRazao">
+                      {{ option.PessoaFisica.Pessoa.NomeRazao }}
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+
+                <mat-form-field class="auto-complete">
+                  <input type="text" aria-label="Number" placeholder="3º Aux" matInput [(ngModel)]="terceiroAuxEquipeTres" name="terceiroAuxEquipeTres" [matAutocomplete]="auto11" (ngModelChange)="buscaTerceiroAuxEquipeTres(terceiroAuxEquipeTres)"/>
+                  <mat-autocomplete #auto11="matAutocomplete">
+                    <mat-option *ngFor="let option of opcoesTerceiroAuxEquipeTres" [value]="option.PessoaFisica.Pessoa.NomeRazao">
+                      {{ option.PessoaFisica.Pessoa.NomeRazao }}
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+
+                <mat-form-field class="auto-complete">
+                  <mat-label>Data</mat-label>
+                  <input matInput [textMask]="{ mask: data }" [(ngModel)]="dataCentroCirurgico3" name="dataCentroCirurgico3">
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col text-center">
+              <button class="btn btn-success mb-3" (click)="adicionaCentroCirurgico()">
+                Salvar
+              </button>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Santa Lucia e gama -->
+      <mat-tab label="Códigos" *ngIf="this.unidadeAtendimento == 4 || this.unidadeAtendimento == 2 || this.unidadeAtendimento == 12">
+        <div class="card mt-3" id="card">
+          <h2 class="text-center">
+            Centros Cirúgicos
+          </h2>
+          <div class="text-center">
+            <mat-form-field class="w-75">
+              <mat-label>Equipes</mat-label>
+              <mat-select multiple [(ngModel)]="centroCirurgicos" name="centroCirurgicos">
+                <mat-option *ngFor="let c of centrosCirurgicos" [value]="c.id">{{ c.centroCirurgicoDisplay }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <h4 class="form-label">Códigos:</h4>
+            <textarea cols="50" rows="5" [(ngModel)]="codigos" name="codigos"></textarea>
+
+            <div class="m-2">
+              <button class="btn btn-success" (click)="salvarCodigos()">
+                Salvar
+              </button>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+    </mat-tab-group>
+  </div>
+</body>

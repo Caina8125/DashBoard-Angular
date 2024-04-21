@@ -1,0 +1,487 @@
+<body [ngClass]="modoEscuroListaServicos ? 'dark-theme' :''">
+  <div class="container">
+    <div class="row">
+      <div class="col d-flex">
+        <div class="fs-2">
+          <a (click)="voltar()">
+            <i class="bi bi-arrow-left"></i>
+          </a>
+        </div>
+        <h1 class="text-center mt-2 ms-2">Início</h1>
+      </div>
+    </div>
+    <form [formGroup]="cobrancaForm" (ngSubmit)="seperacaoFiltro()">
+      <div class="row">
+        <div class="col">
+          <label class="form-label">Usuário</label>
+          <select class="form-select" (change)="onChange($any($event.target).value)" formControlName="usuario">
+            <option value="geral">Geral</option>
+            <option *ngFor="let c of listaColaboradores" value="{{ c['pessoaInclusao'] }}">
+              {{ c["nome"] }}
+            </option>
+          </select>
+        </div>
+        <div class="col">
+          <label class="form-label">Operadora</label>
+          <select class="form-select" (change)="onChangeOperadora($any($event.target).value)" formControlName="operadora">
+            <option value="0">Geral</option>
+            <option *ngFor="let c of listaUnidadesOperadoras" value="{{ c['id'] }}">
+              {{ c["apelido"] }}
+            </option>
+          </select>
+        </div>
+        <div class="col">
+          <label class="form-label">Atendimento</label>
+          <input type="text" class="form-control" formControlName="atendimento"/>
+        </div>
+        <div class="col">
+          <label class="form-label">Conta</label>
+          <input type="text" class="form-control" formControlName="conta" />
+        </div>
+        <div class="col">
+          <label class="form-label">Paciente</label>
+          <input type="text" class="form-control" formControlName="paciente" />
+        </div>
+        <div class="col">
+          <label class="form-label">Data Inicial</label>
+          <input type="date" class="form-control" formControlName="dataInicial"/>
+        </div>
+        <div class="col">
+          <label class="form-label">Data Final</label>
+          <input type="date" class="form-control" formControlName="dataFinal" />
+        </div>
+        <div class="col text-center">
+          <button class="btn" id="btn-buscar" type="submit">
+            Buscar
+            <i class="bi bi-search"></i>
+          </button>
+        </div>
+        <div class="col text-center" *ngIf="filtroAtivo == true">
+          <button class="btn btn-secondary" matTooltip="Limpar Filtros" (click)="onChange(this.idUsuario)" id="btn-trash">
+            <i class="bi bi-trash3"></i>
+          </button>
+        </div>
+      </div>
+    </form>
+    <div class="row">
+      <div class="col">
+        <mat-tab-group class="mt-3 no-scroll">
+          <mat-tab label="Cobranças Pendentes">
+            <mat-tab-group class="mt-3" (selectedTabChange)="selecionarAba($event)">
+              <mat-tab label="Centro Cirúrgico({{ this.totalCentroCirurgicoPendente }})" *ngIf="this.idUnidadeAtendimento != 11 && this.idUnidadeAtendimento != 8">
+                <table mat-table [dataSource]="dataSourceCentroCirurgicoPendente">
+                  <ng-container matColumnDef="atendimentos">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Atendimento
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.cobrancaObject.contaObject.internacaoObject.registroAtendimentoObject.nroRegistroAtendimento }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="conta">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Conta
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.cobrancaObject.contaObject.numeroConta }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="paciente">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Paciente
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.cobrancaObject.contaObject.internacaoObject.registroAtendimentoObject.paciente }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="acomodacao">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Acomodação/Equipe
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.equipeCorpoClinicoObject.descricao }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="statusConta">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Status Cobrança
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center" id="statusPendente">
+                      {{ paciente.statusCobrancaObject.descricao }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="editar">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Editar
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      <button class="btn fs-4" (click)="open(statusServicoModal)">
+                        <i class="bi bi-pencil-square"></i>
+                      </button>
+                      <ng-template #statusServicoModal let-modal>
+                        <div class="modal-header">
+                          <h4 class="modal-title" id="modal-basic-title">
+                            Edição de Centro Cirúrgico
+                          </h4>
+                          <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+                        </div>
+                        <div class="p-5">
+                          <label class="form-label">Status Centro Cirúrgico</label>
+                          <select class="form-select" [(ngModel)]="statusCentroCirurgico" name="statusCentroCirurgico">
+                            <option *ngFor="let s of StatusCentroCirurgico" [ngValue]="s.id">
+                              {{ s.nome }}
+                            </option>
+                          </select>
+                          <div class="text-center">
+                            <button class="btn w-75 m-3" id="btn-cobranca" (click)="atualizaStatusCentroCirurgico(paciente.id)">
+                              Salvar Status do Centro Cirúrgico
+                            </button>
+                          </div>
+                        </div>
+                      </ng-template>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="colunasCentroCirurgico"></tr>
+                  <tr mat-row *matRowDef="let row; columns: colunasCentroCirurgico"></tr>
+                </table>
+              </mat-tab>
+              <mat-tab label="Serviços ({{ this.totalServicosPendentes }})">
+                <table mat-table [dataSource]="dataSourceServicosPendentes">
+                  <ng-container matColumnDef="servicos">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Serviços
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.servicoObject.descricao }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="atendimentos">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Atendimentos
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.cobrancaObject.contaObject.internacaoObject.registroAtendimentoObject.nroRegistroAtendimento }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="conta">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Conta
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.cobrancaObject.contaObject.numeroConta }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="paciente">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Paciente
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.cobrancaObject.contaObject.internacaoObject.registroAtendimentoObject.paciente }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="convenio">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Convênio
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.cobrancaObject.contaObject.unidadeOperadoraObject.apelido }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="acomodacao">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Acomodação
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.acomodacaoObject.descricao }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="statusConta">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Status Conta
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center" id="statusPendente">
+                      {{ paciente.cobrancaObject.statusCobrancaObject.descricao }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="editar">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Editar
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      <button class="btn fs-4" (click)="open(statusServicoModal)">
+                        <i class="bi bi-pencil-square"></i>
+                      </button>
+                      <ng-template #statusServicoModal let-modal>
+                        <div class="modal-header">
+                          <h4 class="modal-title" id="modal-basic-title">
+                            Edição de Serviços
+                          </h4>
+                          <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+                        </div>
+                        <div class="p-5">
+                          <label class="form-label">Status Serviços</label>
+                          <select class="form-select" [(ngModel)]="statusServicoCobranca" name="statusServicoCobranca">
+                            <option *ngFor="let s of StatusCentroCirurgico" [ngValue]="s.id">
+                              {{ s.nome }}
+                            </option>
+                          </select>
+                          <div class="text-center">
+                            <button class="btn w-75 m-3" id="btn-cobranca" (click)="atualizaStatusServico(paciente.id)">
+                              Salvar Status do Serviço
+                            </button>
+                          </div>
+                        </div>
+                      </ng-template>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="colunasServicos"></tr>
+                  <tr mat-row *matRowDef="let row; columns: colunasServicos"></tr>
+                </table>
+              </mat-tab>
+            </mat-tab-group>
+            <div class="row" *ngIf="dataSourceCentroCirurgicoPendente != null || dataSourceServicosPendentes != null">
+              <div class="col text-center" *ngIf="this.totalCentroCirurgicoPendente > 10 && this.aba == 0 && this.idUnidadeAtendimento != 8 && this.idUnidadeAtendimento != 11">
+                <mat-paginator [length]="this.totalCentroCirurgicoPendente"  [pageSize]="10"(page)="handlePageEvent($event)">
+                </mat-paginator>
+              </div>
+              <div class="col text-center" *ngIf="this.totalServicosPendentes > 10 && this.aba == 1">
+                <mat-paginator [length]="this.totalServicosPendentes" [pageSize]="10" (page)="handlePageEvent($event)">
+                </mat-paginator>
+              </div>
+            </div>
+          </mat-tab>
+          <mat-tab label="Cobranças Prontas">
+            <mat-tab-group class="mt-3">
+              <mat-tab label="Centro Cirúrgico ({{this.totalCentroCirurgicoPronto}})" *ngIf="this.idUnidadeAtendimento != 11 && this.idUnidadeAtendimento != 8">
+                <table mat-table [dataSource]="dataSourceCentroCirurgicoPronto">
+                  <ng-container matColumnDef="servicos">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Serviços
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.servicoObject.descricao }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="atendimentos">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Atendimento
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.cobrancaObject.contaObject.internacaoObject.registroAtendimentoObject.nroRegistroAtendimento }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="conta">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Conta
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.cobrancaObject.contaObject.numeroConta }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="paciente">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Paciente
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.cobrancaObject.contaObject.internacaoObject.registroAtendimentoObject.paciente }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="convenio">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Convênio
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.cobrancaObject.contaObject.unidadeOperadoraObject.apelido }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="acomodacao">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Acomodação/Equipe
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.equipeCorpoClinicoObject.descricao }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="statusConta">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Status Cobrança
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center" id="statusPronto">
+                      {{ paciente.statusCobrancaObject.descricao }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="editar">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Editar
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      <button class="btn fs-4" (click)="open(statusServicoModal)">
+                        <i class="bi bi-pencil-square"></i>
+                      </button>
+                      <ng-template #statusServicoModal let-modal>
+                        <div class="modal-header">
+                          <h4 class="modal-title" id="modal-basic-title">
+                            Edição de Centro Cirúrgico
+                          </h4>
+                          <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+                        </div>
+                        <div class="p-5">
+                          <label class="form-label">Status Centro Cirúrgico</label>
+                          <select class="form-select" [(ngModel)]="statusCentroCirurgico" name="statusCentroCirurgico">
+                            <option *ngFor="let s of StatusCentroCirurgico" [ngValue]="s.id">
+                              {{ s.nome }}
+                            </option>
+                          </select>
+                          <div class="text-center">
+                            <button class="btn w-75 m-3" id="btn-cobranca" (click)="atualizaStatusCentroCirurgico(paciente.id)">
+                              Salvar Status do Centro Cirúrgico
+                            </button>
+                          </div>
+                        </div>
+                      </ng-template>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="colunasCentroCirurgico"></tr>
+                  <tr mat-row *matRowDef="let row; columns: colunasCentroCirurgico"></tr>
+                </table>
+              </mat-tab>
+              <mat-tab label="Serviços ({{this.totalServicosProntos}})">
+                <table mat-table [dataSource]="dataSourceServicosProntos">
+                  <ng-container matColumnDef="servicos">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Serviços
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.servicoObject.descricao }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="atendimentos">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Atendimentos
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.cobrancaObject.contaObject.internacaoObject.registroAtendimentoObject.nroRegistroAtendimento }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="conta">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Conta
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.cobrancaObject.contaObject.numeroConta }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="paciente">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Paciente
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.cobrancaObject.contaObject.internacaoObject.registroAtendimentoObject.paciente }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="convenio">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Convênio
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.cobrancaObject.contaObject.unidadeOperadoraObject.apelido }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="acomodacao">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Acomodação
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.acomodacaoObject.descricao }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="statusConta">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Status Cobrança
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center" id="statusPronto">
+                      {{ paciente.statusCobrancaObject.descricao }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="editar">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Editar
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      <button class="btn fs-4" (click)="open(statusServicoModal)">
+                        <i class="bi bi-pencil-square"></i>
+                      </button>
+                      <ng-template #statusServicoModal let-modal>
+                        <div class="modal-header">
+                          <h4 class="modal-title" id="modal-basic-title">
+                            Edição de Serviços
+                          </h4>
+                          <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+                        </div>
+                        <div class="p-5">
+                          <label class="form-label">Status Serviços</label>
+                          <select class="form-select" [(ngModel)]="statusServicoCobranca" name="statusServicoCobranca">
+                            <option *ngFor="let s of StatusCentroCirurgico" [ngValue]="s.id">
+                              {{ s.nome }}
+                            </option>
+                          </select>
+                          <div class="text-center">
+                            <button class="btn w-75 m-3" id="btn-cobranca" (click)="atualizaStatusServico(paciente.id)">
+                              Salvar Status do Serviço
+                            </button>
+                          </div>
+                        </div>
+                      </ng-template>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="colunasServicos"></tr>
+                  <tr mat-row *matRowDef="let row; columns: colunasServicos"></tr>
+                </table>
+              </mat-tab>
+            </mat-tab-group>
+            <div class="row" *ngIf="dataSourceCentroCirurgicoPronto != null || dataSourceServicosProntos != null">
+              <div class="col text-center" *ngIf="this.totalCentroCirurgicoPronto > 10">
+                <mat-paginator [length]="this.totalCentroCirurgicoPronto"  [pageSize]="10"(page)="handlePageEvent($event)">
+                </mat-paginator>
+              </div>
+              <div class="col text-center" *ngIf="this.totalServicosProntos > 10 && this.aba == 0 && this.idUnidadeAtendimento != 8 && this.idUnidadeAtendimento != 11">
+                <mat-paginator [length]="this.totalServicosProntos" [pageSize]="10" (page)="handlePageEvent($event)">
+                </mat-paginator>
+              </div>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+      </div>
+    </div>
+  </div>
+</body>

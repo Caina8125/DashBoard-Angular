@@ -1,0 +1,157 @@
+.dark-theme{
+  background-color: var(--bkg-cadastro-operadora);
+  color: var(--txt-color);
+}
+
+.card{
+  color: var(--txt-color);
+  background-color: var(--bkg-card);
+}
+
+#form-label{
+  color: var(--txt-color);
+}
+
+.form-select{
+  background-color: var(--bkg-card);
+  color: var(--txt-color);
+}
+
+.form-control{
+  background-color: var(--bkg-card);
+  color: var(--txt-color);
+}
+
+#tab{
+  color: var(--txt-color);
+  background-color: var(--bkg-card);
+}
+
+table{
+  color: var(--txt-color);
+  background-color: var(--bkg-card);
+}
+
+th{
+  color: var(--txt-color);
+  text-transform: uppercase;
+}
+
+td{
+  color: var(--txt-color);
+  text-transform: uppercase;
+}
+
+#paginador{
+  color: var(--txt-color);
+  background-color: var(--bkg-card);
+}
+
+i{
+  cursor: pointer;
+}
+
+.container{
+  max-width: 1200px;
+}
+
+a{
+  color: black;
+}
+
+.input-group{
+  margin: 0 auto;
+}
+
+#botoes{
+  display: contents;
+}
+
+#btn-buscar{
+  margin-top: 30px;
+  background-color: #058288;
+  color: white;
+}
+
+#btn_com_texto{
+  display: none;
+}
+
+#btn-download{
+  margin-top: 30px;
+  background-color: #058288;
+  color: white;
+  font-size: 17px;
+}
+
+#btn-trash{
+  margin-top: 30px;
+  font-size: 17px;
+}
+
+#btn{
+  margin-top: 30px;
+  background-color: #073763;
+  color: white;
+  font-size: 17px;
+}
+
+.spinner{
+  margin: 0 auto;
+}
+
+#editado{
+  color: green;
+  font-size: 20px;
+}
+
+#naoEditado{
+  color: rgb(226, 156, 156);
+  font-size: 20px;
+}
+
+#parcial{
+  margin-left: 10px;
+  color: rgb(161, 161, 161);
+  font-size: 20px;
+}
+
+#parciais{
+  margin-left: 10px;
+  color: rgb(28, 107, 255);
+  font-size: 20px;
+}
+
+table{
+  display: block;
+  overflow: auto;
+}
+
+td{
+  text-transform: uppercase;
+}
+
+th{
+  width: 1%;
+  text-transform: uppercase;
+}
+
+#btn-buscar-icone{
+  margin-top: 30px;
+  background-color: #058288;
+  color: white;
+}
+
+@media (min-width: 1800px) {
+  .container{
+    max-width: 106.25rem;
+  }
+
+  #btn_com_texto{
+    display:contents
+  }
+
+  #btn-buscar-icone{
+    display: none;
+  }
+}

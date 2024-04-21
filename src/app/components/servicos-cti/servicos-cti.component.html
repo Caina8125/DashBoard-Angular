@@ -1,0 +1,69 @@
+<div class="card mt-3" id="card">
+  <div class="row">
+    <div class="col">
+      <div class="text-center">
+        <form (ngSubmit)="enviarPlantoesExames()">
+          <div class="row">
+            <div class="col mt-5">
+              <div class="m-4">
+                <h2 class="form-label text-center">Data Serviço</h2>
+                <input type="date" class="form-control w-50" id="servicos__data" [(ngModel)]="dataExame" name="dataExame"/>
+              </div>
+            </div>
+            <div class="col">
+              <div class="m-4">
+                <h2 class="form-label text-center mt-5">Plantões</h2>
+                <input class="form-check-input" type="checkbox" id="flexCheckChecked" [(ngModel)]="PD" name="PD"/>
+                <label class="form-check-label" for="flexCheckChecked">
+                  Plantão diurno
+                </label><br />
+
+                <input class="form-check-input" type="checkbox" id="flexCheckChecked1" [(ngModel)]="PN" name="PN"/>
+                <label class="form-check-label" for="flexCheckChecked1">
+                  Plantão Noturno
+                </label><br />
+
+                <input class="form-check-input" type="checkbox" id="flexCheckChecked2" [(ngModel)]="INP" name="INP"/>
+                <label class="form-check-label" for="flexCheckChecked2">
+                  Intensivista não plantonista
+                </label><br />
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col mt-3">
+              <div class="m-4">
+                <h2 class="form-label">Médico</h2>
+                <mat-form-field class="auto-complete">
+                  <input type="text" aria-label="Number" matInput [(ngModel)]="medicoServico" name="medicoServico" [matAutocomplete]="auto" (ngModelChange)="buscaPrimeiroCirurgiao(medicoServico)"/>
+                  <mat-autocomplete #auto="matAutocomplete" [displayWith]="formatarNome">
+                    <mat-option *ngFor="let option of opcoesPrimeiroCirurgiao" [value]="option">
+                      {{ formatarNome(option) }}
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="col">
+              <div class="m-4">
+                <h2 class="form-label mt-5">Exames</h2>
+                <mat-form-field appearance="fill" class="w-75">
+                  <mat-label>Exames</mat-label>
+                  <mat-select multiple [(ngModel)]="exames" name="exames" >
+                    <mat-option *ngFor="let exame of examesCTI" [value]="exame">{{ exame.descricao }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+          <button class="btn m-4" id="btn-salvar" type="submit" [disabled]="this.botaodsbld">
+            <span *ngIf="!loadingService.getLoading()">
+              Salvar
+            </span>
+            <app-spinner></app-spinner>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

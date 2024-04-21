@@ -1,0 +1,1163 @@
+<body [ngClass]="modoEscuroListaInternacao ? 'dark-theme' : ''">
+  <div class="container">
+    <div class="row">
+      <div class="col d-flex">
+        <div class="fs-2">
+          <a (click)="voltar()">
+            <i class="bi bi-arrow-left" id="voltar"></i>
+          </a>
+        </div>
+        <h1 class="text-center mt-2 ms-2">Início</h1>
+      </div>
+    </div>
+
+    <div class="card p-3">
+      <form [formGroup]="internacaoForm" (ngSubmit)="separacaoFiltro(this.pageIndex,1)">
+        <div class="row">
+          <div class="col">
+            <label class="form-label">Usuário</label>
+            <select class="form-select" (change)="separacaoFiltro(this.pageIndex)" formControlName="usuario">
+              <option value="geral">Geral</option>
+              <option *ngFor="let c of listaColaboradores" value="{{ c['id'] }}">
+                {{ c["pessoaNome"] | uppercase }}
+              </option>
+            </select>
+          </div>
+
+          <div class="col">
+            <label class="form-label">Operadora</label>
+            <select class="form-select" (change)="separacaoFiltro(this.pageIndex)" formControlName="operadora">
+              <option value="0">Geral</option>
+              <option *ngFor="let c of listaUnidadesOperadoras" value="{{ c['id'] }}">
+                {{ c["apelido"] }}
+              </option>
+            </select>
+          </div>
+
+          <div class="col">
+            <label class="form-label">Acomodação</label>
+            <select class="form-select" (change)="separacaoFiltro(this.pageIndex)" formControlName="acomodacao">
+              <option value="0">Geral</option>
+              <option *ngFor="let c of listaAcomodacao" value="{{ c['id'] }}">
+                {{ c["descricao"] }}
+              </option>
+            </select>
+          </div>
+
+          <div class="col">
+            <label class="form-label">Atendimento</label>
+            <input type="text" class="form-control" formControlName="atendimento"/>
+          </div>
+
+          <div class="col">
+            <label class="form-label">Paciente</label>
+            <input type="text" class="form-control" formControlName="paciente"/>
+          </div>
+
+          <div class="col text-center" id="btn_com_texto">
+            <button class="btn" id="btn-buscar" type="submit">
+              Buscar
+              <i class="bi bi-search"></i>
+            </button>
+          </div>
+
+          <div class="col">
+            <button class="btn ms-1" id="btn-buscar-icone" type="submit">
+              <i class="bi bi-search"></i>
+            </button>
+            <button class="btn btn-secondary ms-1" matTooltip="Limpar Filtros" (click)="limparFiltros()" id="btn-trash" *ngIf="this.filtroAtivo == true || this.periodoAtivo == true">
+              <i class="bi bi-trash3"></i>
+            </button>
+            <button class="btn ms-1" [routerLink]="['/criar-internacao']" [queryParams]="{ unidadeAtendimento: unidadeAtendimento, idUsuario: idUsuario}" id="btn" matTooltip="Criar Internação">
+              <i class="bi bi-plus-circle"></i>
+            </button>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <div>
+              <label class="form-label">Tipo de busca</label>
+            </div>
+            <mat-radio-group formControlName="tipoBusca" [ngClass]="modoEscuroListaInternacao ? 'alternative' : ''">
+              <mat-radio-button value="0" id="form-label">
+                Internação
+              </mat-radio-button>
+              <mat-radio-button value="1" id="form-label">
+                Criação
+              </mat-radio-button>
+            </mat-radio-group>
+          </div>
+          <div class="col">
+            <div>
+              <label class="form-label">Status da Internação</label>
+            </div>
+            <mat-radio-group formControlName="statusInternacao" [ngClass]="modoEscuroListaInternacao ? 'alternative' : ''">
+              <mat-radio-button value="1" id="form-label" (click)="this.separacaoFiltro(this.pageIndex,1)">
+                AMHP
+              </mat-radio-button>
+              <mat-radio-button value="2" id="form-label" (click)="this.separacaoFiltro(this.pageIndex,2)">
+                Hospital
+              </mat-radio-button>
+            </mat-radio-group>
+          </div>
+
+          <div class="col">
+            <label class="form-label">Data Inicial</label>
+            <input type="date" class="form-control" formControlName="dataInicial"/>
+          </div>
+
+          <div class="col">
+            <label class="form-label">Data Final</label>
+            <input type="date" class="form-control" formControlName="dataFinal"/>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col text-center m-3">
+            Última carga realizada: <br />{{ this.dataLog | date : "dd/MM/yyyy HH:mm" }} - {{ this.pessoaLog }}
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <mat-tab-group  [ngClass]="modoEscuroListaInternacao ? 'alternative' :''">
+          <mat-tab label="Parciais" *ngIf="this.unidadeAtendimento != 2 && this.unidadeAtendimento != 4 && this.unidadeAtendimento != 12">
+            <mat-tab-group [ngClass]="modoEscuroListaInternacao ? 'alternative' : ''">
+              <mat-tab label="Parciais ({{ this.totalItensParciais }})" *ngIf="this.unidadeAtendimento != 4 && this.unidadeAtendimento != 2">
+                <div class="d-flex justify-content-center align-items-center m-3">
+                  <app-spinner></app-spinner>
+                </div>
+                <table mat-table [dataSource]="dataSourceParciais">
+                  <ng-container matColumnDef="usuario">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Usuário
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.nomeUsuario }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="nroRegistroAtendimento">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Número Atendimento
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.nroRegistroAtendimento }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="paciente">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Paciente
+                    </th>
+                    <td mat-cell *matCellDef="let paciente">
+                      {{ paciente.paciente }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="dataInicial">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Data Inicial
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.dataInicial | date : "dd/MM/yyyy" }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="operadora">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Operadora
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.apelido }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="acomodacao">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Acomodação
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.acomodacao }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="leito">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Leito
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.nroAcomodacao }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="diasInternado">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Dias Internado
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.qtdDiasInternado }} dias
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="evoluido">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Evoluido
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      <i class="bi bi-circle-fill" id="editado" matTooltip="Paciente evoluido" *ngIf="paciente.servico > 0"></i>
+                      <i class="bi bi-circle-fill" id="naoEditado" matTooltip="Paciente não evoluido" *ngIf="paciente.servico <= 0"></i>
+                      <i class="bi bi-circle-fill" id="parcial" matTooltip="Paciente com 1 parcial" *ngIf="paciente.parciais == 0"></i>
+                      <i class="bi bi-circle-fill" id="parciais" matTooltip="Paciente com mais de 1 parcial" *ngIf="paciente.parciais > 0" (click)="open(parcias,paciente.id)"></i>
+                    </td>
+                    <ng-template #parcias let-modal>
+                      <div class="modal-header">
+                        <h1 class="modal-title" id="modal-basic-title">
+                          Historico Internação
+                        </h1>
+                        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+                      </div>
+                      <div class="modal-body">
+                        <table mat-table [dataSource]="dataSourceAuditoria">
+                          <ng-container matColumnDef="coluna">
+                            <th mat-header-cell *matHeaderCellDef class="text-center">
+                              Valor Alterado
+                            </th>
+                            <td mat-cell *matCellDef="let historico" class="text-center">
+                              {{ historico.coluna }}
+                            </td>
+                          </ng-container>
+                          <ng-container matColumnDef="antigo">
+                            <th mat-header-cell *matHeaderCellDef class="text-center">Valor Antigo</th>
+                            <td mat-cell *matCellDef="let historico" class="text-center">
+                              {{ historico.antigo }}
+                            </td>
+                          </ng-container>
+                          <ng-container matColumnDef="novo">
+                            <th mat-header-cell *matHeaderCellDef class="text-center">Valor novo</th>
+                            <td mat-cell *matCellDef="let historico" class="text-center">
+                              {{ historico.novo }}
+                            </td>
+                          </ng-container>
+                          <ng-container matColumnDef="dataCriacao">
+                            <th mat-header-cell *matHeaderCellDef class="text-center">
+                              Data Alteração
+                            </th>
+                            <td mat-cell *matCellDef="let historico" class="text-center">
+                              {{ historico.dataCriacao | date : "dd/MM/yyyy HH:mm"}}
+                            </td>
+                          </ng-container>
+                          <tr mat-header-row *matHeaderRowDef="colunasAuditria"></tr>
+                          <tr mat-row *matRowDef="let row; columns: colunasAuditria"></tr>
+                        </table>
+                      </div>
+                    </ng-template>
+                  </ng-container>
+
+                  <ng-container matColumnDef="abrirContas">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Editar
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      <i
+                        class="bi bi-pencil-square fs-5"
+                        [routerLink]="['/criar-internacao']"
+                        [queryParams]="{
+                          unidadeAtendimento: unidadeAtendimento,
+                          nroRegistro: paciente.nroRegistroAtendimento,
+                          idEvolucao: paciente.idEvolucao,
+                          idUsuario: idUsuario,
+                          idInternacao:paciente.id
+                        }"
+                      ></i>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="colunas"></tr>
+                  <tr mat-row *matRowDef="let row; columns: colunas"></tr>
+                </table>
+                <div class="col text-center" *ngIf="this.totalItensParciais > 10">
+                  <mat-paginator
+                    #paginator
+                    [length]="totalItensParciais"
+                    [pageSize]="10"
+                    (page)="handlePageEvent($event,3)"
+                    id="paginador"
+                  ></mat-paginator>
+                </div>
+              </mat-tab>
+
+              <mat-tab label="Não Encontrado ({{ this.totalItensNaoEncontrado }})" *ngIf="this.unidadeAtendimento == 8 || this.unidadeAtendimento == 11">
+                <table mat-table [dataSource]="dataSourceNaoEncontrado">
+                  <ng-container matColumnDef="usuario">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Usuário
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.nomeUsuario }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="nroRegistroAtendimento">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Número Atendimento
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.nroRegistroAtendimento }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="paciente">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Paciente
+                    </th>
+                    <td mat-cell *matCellDef="let paciente">
+                      {{ paciente.paciente }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="dataInicial">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Data Inicial
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.dataInicial | date : "dd/MM/yyyy" }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="operadora">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Operadora
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.apelido }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="acomodacao">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Acomodação
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.acomodacao }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="leito">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Leito
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.nroAcomodacao }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="diasInternado">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Dias Internado
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.qtdDiasInternado }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="evoluido">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Evoluido
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      <i class="bi bi-circle-fill" id="editado" matTooltip="Paciente evoluido" *ngIf="paciente.servico > 0"></i>
+                      <i class="bi bi-circle-fill" id="naoEditado" matTooltip="Paciente não evoluido" *ngIf="paciente.servico <= 0"></i>
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="abrirContas">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Editar
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      <i
+                        class="bi bi-pencil-square fs-5"
+                        [routerLink]="['/criar-internacao']"
+                        [queryParams]="{
+                          unidadeAtendimento: unidadeAtendimento,
+                          nroRegistro: paciente.nroRegistroAtendimento,
+                          idEvolucao: paciente.idEvolucao,
+                          idUsuario: idUsuario
+                        }"
+                      ></i>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="colunas"></tr>
+                  <tr mat-row *matRowDef="let row; columns: colunas"></tr>
+                </table>
+                <div class="col text-center" *ngIf="this.totalItensNaoEncontrado > 10">
+                  <mat-paginator
+                    #paginator
+                    [length]="this.totalItensNaoEncontrado"
+                    [pageSize]="10"
+                    (page)="handlePageEvent($event,5)"
+                    id="paginador"
+                  ></mat-paginator>
+                </div>
+              </mat-tab>
+            </mat-tab-group>
+          </mat-tab>
+          <mat-tab label="Altas">
+            <mat-tab-group [ngClass]="modoEscuroListaInternacao ? 'alternative' : ''">
+              <mat-tab *ngIf="this.unidadeAtendimento != 8 && this.unidadeAtendimento != 11">
+                <span *ngIf="this.unidadeAtendimento == 4 || this.unidadeAtendimento == 2">
+                  <ng-template mat-tab-label>
+                    Pacientes internados ({{ this.totalItensAlta }})
+                  </ng-template>
+                </span>
+                <span *ngIf="this.unidadeAtendimento != 4 || this.unidadeAtendimento != 2">
+                  <ng-template mat-tab-label>
+                    Pacientes em alta ({{ this.totalItensAlta }})
+                  </ng-template>
+                </span>
+                <table mat-table [dataSource]="dataSourceAlta">
+                  <ng-container matColumnDef="usuario">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Usuário
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.nomeUsuario }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="nroRegistroAtendimento">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Número Atendimento
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.nroRegistroAtendimento }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="paciente">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Paciente
+                    </th>
+                    <td mat-cell *matCellDef="let paciente">
+                      {{ paciente.paciente }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="dataInicial">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Data Inicial
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.dataInicial | date : "dd/MM/yyyy" }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="operadora">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Operadora
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.apelido }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="acomodacao">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Acomodação
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.acomodacao }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="leito">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Leito
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.nroAcomodacao }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="diasInternado">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Dias Internado
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.qtdDiasInternado }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="abrirContas">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Editar
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      <i
+                        class="bi bi-pencil-square fs-5"
+                        [routerLink]="['/criar-internacao']"
+                        [queryParams]="{
+                          unidadeAtendimento: unidadeAtendimento,
+                          nroRegistro: paciente.nroRegistroAtendimento,
+                          idEvolucao: paciente.idEvolucao,
+                          idUsuario: idUsuario
+                        }"
+                      ></i>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="colunasAltas"></tr>
+                  <tr mat-row *matRowDef="let row; columns: colunasAltas"></tr>
+                </table>
+                <div class="col text-center" *ngIf="this.totalItensAlta > 10">
+                  <mat-paginator
+                    [length]="totalItensAlta"
+                    [pageSize]="10"
+                    (page)="handlePageEvent($event,1)"
+                    id="paginador"
+                  ></mat-paginator>
+                </div>
+              </mat-tab>
+
+              <mat-tab label="Óbito({{ this.totalItensObito }})" *ngIf="this.unidadeAtendimento != 4 && this.unidadeAtendimento != 2">
+                <table mat-table [dataSource]="dataSourceObito">
+                  <ng-container matColumnDef="usuario">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Usuário
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.nomeUsuario }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="nroRegistroAtendimento">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Número Atendimento
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.nroRegistroAtendimento }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="paciente">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Paciente
+                    </th>
+                    <td mat-cell *matCellDef="let paciente">
+                      {{ paciente.paciente }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="dataInicial">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Data Inicial
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.dataInicial | date : "dd/MM/yyyy" }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="operadora">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Operadora
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.apelido }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="acomodacao">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Acomodação
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.acomodacao }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="leito">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Leito
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.nroAcomodacao }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="diasInternado">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Dias Internado
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.qtdDiasInternado }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="abrirContas">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Editar
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      <i
+                        class="bi bi-pencil-square fs-5"
+                        [routerLink]="['/criar-internacao']"
+                        [queryParams]="{
+                          unidadeAtendimento: unidadeAtendimento,
+                          nroRegistro: paciente.nroRegistroAtendimento,
+                          idEvolucao: paciente.idEvolucao,
+                          idUsuario: idUsuario
+                        }"
+                      ></i>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="colunasAltas"></tr>
+                  <tr mat-row *matRowDef="let row; columns: colunasAltas"></tr>
+                </table>
+                <div class="col text-center" *ngIf="this.totalItensObito > 10">
+                  <mat-paginator
+                    [length]="totalItensObito"
+                    [pageSize]="10"
+                    (page)="handlePageEvent($event,2)"
+                    id="paginador"
+                  ></mat-paginator>
+                </div>
+              </mat-tab>
+
+              <mat-tab label="Apartamento({{ this.totalItensApartamento }})" *ngIf="this.unidadeAtendimento == 8 || this.unidadeAtendimento == 11">
+                <table mat-table [dataSource]="dataSourceApartamento">
+                  <ng-container matColumnDef="usuario">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Usuário
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.nomeUsuario }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="nroRegistroAtendimento">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Número Atendimento
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.nroRegistroAtendimento }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="paciente">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Paciente
+                    </th>
+                    <td mat-cell *matCellDef="let paciente">
+                      {{ paciente.paciente }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="dataInicial">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Data Inicial
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.dataInicial | date : "dd/MM/yyyy" }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="operadora">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Operadora
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.apelido }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="acomodacao">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Acomodação
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.acomodacao }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="leito">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Leito
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.nroAcomodacao }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="diasInternado">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Dias Internado
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.qtdDiasInternado }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="abrirContas">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Editar
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      <i
+                        class="bi bi-pencil-square fs-5"
+                        [routerLink]="['/criar-internacao']"
+                        [queryParams]="{
+                          unidadeAtendimento: unidadeAtendimento,
+                          nroRegistro: paciente.nroRegistroAtendimento,
+                          idEvolucao: paciente.idEvolucao,
+                          idUsuario: idUsuario
+                        }"
+                      ></i>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="colunasAltas"></tr>
+                  <tr mat-row *matRowDef="let row; columns: colunasAltas"></tr>
+                </table>
+                <div
+                  class="col text-center"
+                  *ngIf="this.totalItensApartamento > 10"
+                >
+                  <mat-paginator
+                    [length]="totalItensApartamento"
+                    [pageSize]="10"
+                    (page)="handlePageEvent($event,8)"
+                    id="paginador"
+                  ></mat-paginator>
+                </div>
+              </mat-tab>
+
+              <mat-tab label="Home Care({{ this.totalItensHomeCare }})" *ngIf="this.unidadeAtendimento == 8 || this.unidadeAtendimento == 11">
+                <table mat-table [dataSource]="dataSourceHomeCare">
+                  <ng-container matColumnDef="usuario">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Usuário
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.nomeUsuario }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="nroRegistroAtendimento">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Número Atendimento
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.nroRegistroAtendimento }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="paciente">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Paciente
+                    </th>
+                    <td mat-cell *matCellDef="let paciente">
+                      {{ paciente.paciente }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="dataInicial">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Data Inicial
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.dataInicial | date : "dd/MM/yyyy" }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="operadora">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Operadora
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.apelido }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="acomodacao">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Acomodação
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.acomodacao }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="leito">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Leito
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.nroAcomodacao }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="diasInternado">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Dias Internado
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.qtdDiasInternado }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="abrirContas">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Editar
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      <i
+                        class="bi bi-pencil-square fs-5"
+                        [routerLink]="['/criar-internacao']"
+                        [queryParams]="{
+                          unidadeAtendimento: unidadeAtendimento,
+                          nroRegistro: paciente.nroRegistroAtendimento,
+                          idEvolucao: paciente.idEvolucao,
+                          idUsuario: idUsuario
+                        }"
+                      ></i>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="colunasAltas"></tr>
+                  <tr mat-row *matRowDef="let row; columns: colunasAltas"></tr>
+                </table>
+                <div class="col text-center" *ngIf="this.totalItensHomeCare > 10">
+                  <mat-paginator
+                    [length]="totalItensHomeCare"
+                    [pageSize]="10"
+                    (page)="handlePageEvent($event,4)"
+                    id="paginador"
+                  ></mat-paginator>
+                </div>
+              </mat-tab>
+
+              <mat-tab label="Melhorado({{ this.totalItensMelhorado }})" *ngIf="this.unidadeAtendimento == 8 || this.unidadeAtendimento == 11">
+                <table mat-table [dataSource]="dataSourceMelhorado">
+                  <ng-container matColumnDef="usuario">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Usuário
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.nomeUsuario }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="nroRegistroAtendimento">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Número Atendimento
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.nroRegistroAtendimento }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="paciente">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Paciente
+                    </th>
+                    <td mat-cell *matCellDef="let paciente">
+                      {{ paciente.paciente }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="dataInicial">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Data Inicial
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.dataInicial | date : "dd/MM/yyyy" }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="operadora">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Operadora
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.apelido }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="acomodacao">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Acomodação
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.acomodacao }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="leito">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Leito
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.nroAcomodacao }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="diasInternado">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Dias Internado
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.qtdDiasInternado }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="abrirContas">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Editar
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      <i
+                        class="bi bi-pencil-square fs-5"
+                        [routerLink]="['/criar-internacao']"
+                        [queryParams]="{
+                          unidadeAtendimento: unidadeAtendimento,
+                          nroRegistro: paciente.nroRegistroAtendimento,
+                          idEvolucao: paciente.idEvolucao,
+                          idUsuario: idUsuario
+                        }"
+                      ></i>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="colunasAltas"></tr>
+                  <tr mat-row *matRowDef="let row; columns: colunasAltas"></tr>
+                </table>
+                <div class="col text-center" *ngIf="this.totalItensMelhorado > 10">
+                  <mat-paginator
+                    [length]="totalItensMelhorado"
+                    [pageSize]="10"
+                    (page)="handlePageEvent($event,9)"
+                    id="paginador"
+                  ></mat-paginator>
+                </div>
+              </mat-tab>
+
+              <mat-tab label="Transferido({{ this.totalItensTransferido }})" *ngIf="this.unidadeAtendimento == 8 || this.unidadeAtendimento == 11">
+                <table mat-table [dataSource]="dataSourceTransferido">
+                  <ng-container matColumnDef="usuario">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Usuário
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.nomeUsuario }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="nroRegistroAtendimento">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Número Atendimento
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.nroRegistroAtendimento }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="paciente">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Paciente
+                    </th>
+                    <td mat-cell *matCellDef="let paciente">
+                      {{ paciente.paciente }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="dataInicial">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Data Inicial
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.dataInicial | date : "dd/MM/yyyy" }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="operadora">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Operadora
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.apelido }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="acomodacao">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Acomodação
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.acomodacao }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="leito">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Leito
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.nroAcomodacao }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="diasInternado">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Dias Internado
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.qtdDiasInternado }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="abrirContas">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Editar
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      <i
+                        class="bi bi-pencil-square fs-5"
+                        [routerLink]="['/criar-internacao']"
+                        [queryParams]="{
+                          unidadeAtendimento: unidadeAtendimento,
+                          nroRegistro: paciente.nroRegistroAtendimento,
+                          idEvolucao: paciente.idEvolucao,
+                          idUsuario: idUsuario
+                        }"
+                      ></i>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="colunasAltas"></tr>
+                  <tr mat-row *matRowDef="let row; columns: colunasAltas"></tr>
+                </table>
+                <div class="col text-center" *ngIf="this.totalItensTransferido > 10">
+                  <mat-paginator
+                    [length]="totalItensTransferido"
+                    [pageSize]="10"
+                    (page)="handlePageEvent($event,10)"
+                    id="paginador"
+                  ></mat-paginator>
+                </div>
+              </mat-tab>
+
+              <mat-tab label="A Pedido({{ this.totalItensAPedido }})" *ngIf="this.unidadeAtendimento == 8 || this.unidadeAtendimento == 11">
+                <table mat-table [dataSource]="dataSourceAPedido">
+                  <ng-container matColumnDef="usuario">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Usuário
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.nomeUsuario }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="nroRegistroAtendimento">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Número Atendimento
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.nroRegistroAtendimento }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="paciente">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Paciente
+                    </th>
+                    <td mat-cell *matCellDef="let paciente">
+                      {{ paciente.paciente }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="dataInicial">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Data Inicial
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.dataInicial | date : "dd/MM/yyyy" }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="operadora">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Operadora
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.apelido }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="acomodacao">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Acomodação
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.acomodacao }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="leito">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Leito
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.nroAcomodacao }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="diasInternado">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Dias Internado
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      {{ paciente.qtdDiasInternado }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="abrirContas">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Editar
+                    </th>
+                    <td mat-cell *matCellDef="let paciente" class="text-center">
+                      <i
+                        class="bi bi-pencil-square fs-5"
+                        [routerLink]="['/criar-internacao']"
+                        [queryParams]="{
+                          unidadeAtendimento: unidadeAtendimento,
+                          nroRegistro: paciente.nroRegistroAtendimento,
+                          idEvolucao: paciente.idEvolucao,
+                          idUsuario: idUsuario
+                        }"
+                      ></i>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="colunasAltas"></tr>
+                  <tr mat-row *matRowDef="let row; columns: colunasAltas"></tr>
+                </table>
+                <div class="col text-center" *ngIf="this.totalItensAPedido > 10">
+                  <mat-paginator
+                    [length]="totalItensAPedido"
+                    [pageSize]="10"
+                    (page)="handlePageEvent($event,11)"
+                    id="paginador"
+                  ></mat-paginator>
+                </div>
+              </mat-tab>
+            </mat-tab-group>
+          </mat-tab>
+        </mat-tab-group>
+      </div>
+    </div>
+  </div>
+</body>

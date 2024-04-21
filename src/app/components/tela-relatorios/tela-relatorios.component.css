@@ -1,0 +1,52 @@
+.dark-theme{
+  background-color: var(--bkg-cadastro-operadora);
+  color: var(--txt-color);
+}
+
+mat-expansion-panel{
+  background-color: var(--bkg-cadastro-operadora);
+  color: var(--txt-color);
+}
+
+mat-panel-title{
+  color: var(--txt-color);
+}
+
+.card{
+  color: var(--txt-color);
+  background-color: var(--bkg-card);
+}
+
+#form-label{
+  color: var(--txt-color);
+}
+
+.form-select{
+  background-color: var(--bkg-card);
+  color: var(--txt-color);
+}
+
+.form-control{
+  background-color: var(--bkg-card);
+  color: var(--txt-color);
+}
+
+table{
+  color: var(--txt-color);
+  background-color: var(--bkg-card);
+}
+
+th{
+  color: var(--txt-color);
+  text-transform: uppercase;
+}
+
+td{
+  color: var(--txt-color);
+  text-transform: uppercase;
+}
+
+#paginador{
+  color: var(--txt-color);
+  background-color: var(--bkg-card);
+}

@@ -1,0 +1,131 @@
+<div class="card mt-3 p-3" id="card">
+  <div class="row">
+    <div class="col">
+      <form class="text-center">
+        <!-- <div class="row">
+          <div class="col">
+            <label class="form-label mb-3 d-block text-center">Data Serviço</label>
+            <input type="text" class="form-control w-25 mx-auto d-block" [(ngModel)]="dataServico" name="dataServico" [textMask]="{ mask: data }" />
+          </div>
+        </div>
+        <div class="row mt-3">
+          <div class="col">
+            <label class="form-label text-center">Acomodação</label>
+            <select class="form-select" [(ngModel)]="acomodacao" name="acomodacao">
+              <option *ngFor="let a of acomodacoes" [ngValue]="a.id">
+                {{ a.descricao }}
+              </option>
+            </select>
+          </div>
+          <div class="col">
+            <label class="form-label text-center">Serviço</label>
+            <select class="form-select" [(ngModel)]="servico" name="servico">
+              <option *ngFor="let s of acomodacoes" [ngValue]="s.id">
+                {{ s.descricao }}
+              </option>
+            </select>
+          </div>
+          <div class="col">
+            <label class="form-label text-center">Código</label>
+            <input type="text" class="form-control mx-auto d-block" [(ngModel)]="codigo" name="codigo" />
+          </div>
+          <div class="col">
+            <label class="form-label text-center">Senha</label>
+            <input type="text" class="form-control mx-auto d-block" [(ngModel)]="senha" name="senha" />
+          </div>
+        </div>
+        <div class="row mt-3">
+          <div class="col">
+            <label class="form-label text-center">Médico</label>
+            <input type="text" class="form-control mx-auto d-block" [(ngModel)]="medico" name="medico" />
+          </div>
+          <div class="col">
+            <label class="form-label text-center">Grau de participação</label>
+            <select class="form-select" [(ngModel)]="grauDeParticipacao" name="grauDeParticipacao">
+              <option *ngFor="let s of acomodacoes" [ngValue]="s.id">
+                {{ s.descricao }}
+              </option>
+            </select>
+          </div>
+          <div class="col">
+            <label class="form-label text-center">PJ</label>
+            <input type="text" class="form-control mx-auto d-block" [(ngModel)]="pj" name="pj" />
+          </div>
+          <div class="col">
+            <label class="form-label text-center">Equipe</label>
+            <select class="form-select" [(ngModel)]="equipe" name="equipe">
+              <option *ngFor="let s of acomodacoes" [ngValue]="s.id">
+                {{ s.descricao }}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <button type="button" class="btn btn-success mt-3 me-2">
+              <i class="bi bi-plus"></i>
+            </button>
+            <button type="button" class="btn btn-danger mt-3 ms-2">
+              <i class="bi bi-dash"></i>
+            </button>
+          </div>
+        </div> -->
+        <mat-form-field appearance="fill" class="w-75" *ngIf="this.unidadeAtendimento == 2">
+          <mat-label>UTI</mat-label>
+          <mat-select [(ngModel)]="Uti" name="Uti" multiple>
+            <mat-option *ngFor="let s of servicos" [value]="s.id">
+              {{ s.descricao }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="w-75" *ngIf="this.unidadeAtendimento == 2">
+          <mat-label>Enfermaria</mat-label>
+          <mat-select [(ngModel)]="enfermariaHSL" name="enfermariaHSL" multiple>
+            <mat-option *ngFor="let s of servicos" [value]="s.id">
+              {{ s.descricao }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="w-75" *ngIf="this.unidadeAtendimento == 4 || this.unidadeAtendimento == 2">
+          <mat-label>Apartamento</mat-label>
+          <mat-select [(ngModel)]="apartamentoHSL" name="apartamentoHSL" multiple>
+            <mat-option *ngFor="let s of servicos" [value]="s.id">
+              {{ s.descricao }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="w-75" *ngIf="this.unidadeAtendimento != 4 && this.unidadeAtendimento != 2">
+          <mat-label>UTI</mat-label>
+          <mat-select [(ngModel)]="Uti" name="Uti" multiple>
+            <mat-option *ngFor="let s of servicos" [value]="s.id">
+              {{ s.descricao }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="w-75" *ngIf="this.unidadeAtendimento != 4 && this.unidadeAtendimento != 2">
+          <mat-label>Apartamento</mat-label>
+          <mat-select [(ngModel)]="apartamento" name="apartamento" multiple>
+            <mat-option *ngFor="let s of servicos" [value]="s.id">
+              {{ s.descricao }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="w-75" *ngIf="this.unidadeAtendimento != 4 && this.unidadeAtendimento != 2">
+          <mat-label>Enfermaria</mat-label>
+          <mat-select [(ngModel)]="enfermaria" name="enfermaria" multiple>
+            <mat-option *ngFor="let s of servicos" [value]="s.id">
+              {{ s.descricao }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </form>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col text-center mt-3">
+      <button class="btn" id="btn-salvar" (click)="criarServico()">
+        Salvar
+      </button>
+    </div>
+  </div>
+</div>

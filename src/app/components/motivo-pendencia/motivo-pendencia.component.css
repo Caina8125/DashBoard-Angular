@@ -1,0 +1,33 @@
+#card{
+  overflow: hidden;
+  color: var(--txt-color);
+  background-color: var(--bkg-card);
+}
+
+textarea{
+  color: var(--txt-color);
+  background-color: var(--bkg-card);
+}
+
+table{
+  color: var(--txt-color);
+  background-color: var(--bkg-card);
+}
+
+th{
+  color: var(--txt-color);
+  text-transform: uppercase;
+}
+
+td{
+  color: var(--txt-color);
+  text-transform: uppercase;
+}
+
+#icone-x{
+  color: red;
+}
+
+#icone-check{
+  color: green;
+}

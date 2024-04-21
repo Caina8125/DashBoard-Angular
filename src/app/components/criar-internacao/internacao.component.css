@@ -1,0 +1,72 @@
+.dark-theme{
+  color: var(--txt-color);
+  background-color: var(--bkg-cadastro-operadora);
+}
+
+#card{
+  color: var(--txt-color);
+  background-color: var(--bkg-card);
+}
+
+.form-select{
+  color: var(--txt-color);
+  background-color: var(--bkg-card);
+}
+
+.form-control{
+  color: var(--txt-color);
+  background-color: var(--bkg-card);
+}
+
+#lupa{
+  color: var(--txt-color);
+}
+
+table{
+  color: var(--txt-color);
+  background-color: var(--bkg-card);
+}
+
+th{
+  color: var(--txt-color);
+  text-transform: uppercase;
+}
+
+td{
+  color: var(--txt-color);
+  text-transform: uppercase;
+}
+
+a{
+  color: black;
+}
+
+#modal{
+  width: 800px;
+}
+
+.text {
+  margin-left: 7.5rem;
+}
+
+.textoContas{
+  margin-left: 12.5rem;
+}
+
+#btn-salvar{
+  background-color: #073763;
+  color: white;
+}
+
+#btn-conta{
+  background-color: #058288;
+  color: white;
+}
+
+th{
+  text-transform: uppercase;
+}
+
+td{
+  text-transform: uppercase;
+}

@@ -1,0 +1,43 @@
+.dark-theme{
+  color: var(--txt-color);
+  background-color: var(--bkg-cadastro-operadora);
+}
+
+.input-group{
+  margin: 0 auto;
+}
+
+#botoes{
+  display: contents;
+}
+
+#btn-buscar{
+  color: white;
+  background-color: #058288;
+}
+
+#btn{
+  color: white;
+  background-color: var(--btn-color-success);
+}
+
+.spinner{
+  margin: 0 auto;
+}
+
+mat-tab{
+  color: var(--txt-color);
+  background-color: var(--bkg-card);
+}
+
+table{
+  height: 80vh;
+  overflow: auto;
+  display: block;
+  color: var(--txt-color);
+  background-color: var(--bkg-card);
+}
+
+th{
+  width: 1%;
+}

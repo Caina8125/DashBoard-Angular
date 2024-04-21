@@ -1,0 +1,65 @@
+.dark-theme{
+  background-color: var(--bkg-cadastro-operadora);
+  color: var(--txt-color);
+}
+
+.card{
+  color: var(--txt-color);
+  background-color: var(--bkg-card);
+}
+
+#form-label{
+  color: var(--txt-color);
+}
+
+.form-select{
+  background-color: var(--bkg-card);
+  color: var(--txt-color);
+}
+
+.form-control{
+  background-color: var(--bkg-card);
+  color: var(--txt-color);
+}
+
+table{
+  color: var(--txt-color);
+  background-color: var(--bkg-card);
+}
+
+th{
+  color: var(--txt-color);
+  text-transform: uppercase;
+}
+
+td{
+  color: var(--txt-color);
+  text-transform: uppercase;
+}
+
+i:hover{
+  cursor: pointer;
+}
+
+#btn-buscar{
+  background-color: #058288;
+  margin-top: 2.1875rem;
+  color: white;
+}
+
+#btn-limpar-filtro{
+  margin-top: 2.1875rem;
+}
+
+table{
+  border-bottom: 3px solid lightgray;
+}
+
+td,th{
+  width: 200px;
+  border: 3px solid lightgray;
+}
+
+tr:nth-child(even) {
+  background-color: rgb(174, 175, 175);
+}

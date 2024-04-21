@@ -1,0 +1,90 @@
+<div class="modal-header">
+  <h4 class="modal-title" id="modal-basic-title">
+    Informações sobre a internação
+  </h4>
+  <!-- <button
+          type="button"
+          class="btn-close"
+          aria-label="Close"
+          (click)="modal.dismiss('Cross click')"
+        ></button> -->
+</div>
+<div class="modal-body">
+  <div class="form">
+    <div class="row">
+      <div class="col">
+        <label class="form-label"> Data Inicial </label>
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="dataInicial"
+          name="dataInicial"
+          disabled
+        />
+      </div>
+      <div class="col">
+        <label class="form-label"> Hora Inicial </label>
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="horaInicial"
+          name="horaInicial"
+          disabled
+        />
+      </div>
+    </div>
+    <div class="row mt-3">
+      <div class="col">
+        <label class="form-label"> Data Final </label>
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="dataFinal"
+          name="dataFinal"
+          disabled
+        />
+      </div>
+      <div class="col">
+        <label class="form-label"> Hora Final </label>
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="horaFinal"
+          name="horaFinal"
+          disabled
+        />
+      </div>
+    </div>
+    <div class="row mt-3">
+      <div class="col">
+        <label class="form-label"> Paciente </label>
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="paciente"
+          name="paciente"
+          disabled
+        />
+      </div>
+      <div class="col">
+        <label class="form-label"> Evolucao </label>
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="evolucao"
+          name="evolucao"
+          disabled
+        />
+      </div>
+    </div>
+  </div>
+  <hr />
+  <div class="row">
+    <div class="col">
+      <app-historico-internacao
+        [idInternacao]="this.idInternacao"
+        [unidadeAtendimento]="this.idUnidadeAtendimento"
+      ></app-historico-internacao>
+    </div>
+  </div>
+</div>

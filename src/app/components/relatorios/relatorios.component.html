@@ -1,0 +1,17 @@
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <div class="p-5 text-center">
+        <input type="text" class="form-control mb-3" placeholder="Digite o atendimento desejado" [(ngModel)]="internacao" (ngModelChange)="onFilterTextChange($event)">
+        <ng-multiselect-dropdown
+          [placeholder]="'Escolha a conta do antedimento desejado'"
+          [settings]="dropdownSettings"
+          [data]="this.listaContas"
+          [(ngModel)]="selectedItems"
+          >
+        </ng-multiselect-dropdown>
+        <button class="btn btn-success mt-3" (click)="gerarRelatorio()">Gerar Relatório</button>
+      </div>
+    </div>
+  </div>
+</div>

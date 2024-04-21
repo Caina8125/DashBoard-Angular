@@ -1,0 +1,231 @@
+<body [ngClass]="modoEscuroListaContas ? 'dark-theme' :''">
+  <div class="container">
+    <div class="row">
+      <div class="col d-flex fs-2">
+        <a (click)="voltar()">
+          <i class="bi bi-arrow-left"></i>
+        </a>
+        <h1 class="text-center mt-2 ms-2">Início</h1>
+      </div>
+    </div>
+    <form [formGroup]="contaForm">
+      <div class="row">
+        <div class="col">
+          <label class="form-label">Atendimento</label>
+          <input type="text" class="form-control" formControlName="atendimento" name="atendimento"/>
+        </div>
+
+        <div class="col">
+          <label class="form-label">Nro. Conta</label>
+          <input type="text" class="form-control" formControlName="conta" name="conta"/>
+        </div>
+
+        <div class="col">
+          <label class="form-label">Paciente</label>
+          <input type="text" class="form-control" formControlName="paciente" name="paciente"/>
+        </div>
+
+        <div class="col">
+          <label class="form-label">Data Inicial</label>
+          <input type="date" class="form-control" formControlName="dataInicial" name="dataInicial">
+        </div>
+
+        <div class= "col">
+          <label class="form-label">Data Final</label>
+          <input type="date" class="form-control" formControlName="dataFinal" name="dataFinal">
+        </div>
+
+        <div class="col d-flex">
+          <button class="btn" type="submit" matTooltip="Buscar" id="btn-buscar" (click)="separacaoFiltro()">
+            <i class="bi bi-search"></i>
+          </button>
+          <button class="btn ms-1" matTooltip="Relatórios" (click)="open(relatorios)" id="btn-download" *ngIf="this.unidadeAtendimento == 4 || this.unidadeAtendimento == 2">
+            <i class="bi bi-file-text"></i>
+          </button>
+          <button class="btn ms-1" matTooltip="Relatórios" (click)="open(fecharContas)" id="btn-download" *ngIf="this.unidadeAtendimento == 8 || this.unidadeAtendimento == 11">
+            <i class="bi bi-file-text"></i>
+          </button>
+          <button class="btn btn-secondary ms-1" id="btn-trash" (click)="separacaoFiltro()"  *ngIf="this.filtroAtivo == true">
+            <i class="bi bi-trash3"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="col">
+          <label class="form-label">Usuário</label>
+          <select class="form-select" (change)="separacaoFiltro()" formControlName="usuario" name="usuario">
+            <option selected value="geral">Geral</option>
+            <option *ngFor="let c of listaColaboradores" value="{{ c['id'] }}">
+              {{ c['pessoaNome'] }}
+            </option>
+          </select>
+        </div>
+
+        <div class="col">
+          <label class="form-label">Operadora</label>
+          <select class="form-select" (change)="separacaoFiltro()" formControlName="operadora" name="operadora">
+            <option selected value="0">Geral</option>
+            <option *ngFor="let c of listaOperadoras" value="{{ c['id'] }}">
+              {{ c['apelido'] }}
+            </option>
+          </select>
+        </div>
+
+        <div class="col">
+          <label class="form-label">Local Conta</label>
+          <select class="form-select" (change)="separacaoFiltro()" formControlName="localConta" name="localConta">
+            <option *ngFor="let c of localContas" value="{{ c.id }}">
+              {{ c.nome }}
+            </option>
+          </select>
+        </div>
+
+        <div class="col">
+          <label class="form-label">Status da conta</label>
+          <select class="form-select" (change)="separacaoFiltro()" formControlName="statusConta" name="statusConta">
+            <option *ngFor="let c of listaStatusConta" value="{{ c['id'] }}">
+              {{ c['descricao'] }}
+            </option>
+          </select>
+        </div>
+        <div class="col">
+          <label class="form-label">Status da Validade</label>
+          <select class="form-select" (change)="separacaoFiltro()" formControlName="statusValidade" name="statusValidade">
+            <option value="0">Geral</option>
+            <option *ngFor="let s of listaStatusValidade" value="{{ s['id'] }}">
+              {{ s['descricao'] }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </form>
+
+    <ng-template #relatorios>
+      <app-relatorios [idUnidadeAtendimento]="this.unidadeAtendimento" [usuario]="this.idUsuario"></app-relatorios>
+    </ng-template>
+
+    <ng-template #fecharContas>
+      <app-fechar-contas [idUnidadeAtendimento]="this.unidadeAtendimento" [usuario]="this.idUsuario"></app-fechar-contas>
+    </ng-template>
+
+    <div class="row">
+      <div class="col">
+        <mat-tab-group class="mt-3" (selectedTabChange)="selecionarAba($event)" [ngClass]="modoEscuroListaContas ? 'alternative' :''">
+          <mat-tab label="Contas ({{ this.totalContas }})">
+            <table mat-table [dataSource]="dataSourceContas">
+              <ng-container matColumnDef="usuario">
+                <th mat-header-cell *matHeaderCellDef class="text-center">
+                  Usuário
+                </th>
+                <td mat-cell *matCellDef="let paciente" class="text-center">
+                  {{ paciente.nomeUsuario }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="nroRegistroAtendimento">
+                <th mat-header-cell *matHeaderCellDef class="text-center">
+                  Atendimento
+                </th>
+                <td mat-cell *matCellDef="let paciente" class="text-center">
+                  {{ paciente.nroRegistroAtendimento }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="numeroConta">
+                <th mat-header-cell *matHeaderCellDef class="text-center">
+                  Conta
+                </th>
+                <td mat-cell *matCellDef="let paciente" class="text-center">
+                  {{ paciente.numeroConta }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="paciente">
+                <th mat-header-cell *matHeaderCellDef class="text-center">
+                  Paciente
+                </th>
+                <td mat-cell *matCellDef="let paciente" class="text-center">
+                  {{ paciente.paciente }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="convenio">
+                <th mat-header-cell *matHeaderCellDef class="text-center">
+                  Convênio
+                </th>
+                <td mat-cell *matCellDef="let paciente" class="text-center">
+                  {{ paciente.apelido }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="localChecklist">
+                <th mat-header-cell *matHeaderCellDef class="text-center">
+                  Local Conta
+                </th>
+                <td mat-cell *matCellDef="let paciente" class="text-center">
+                  {{ paciente.descricaoLocalConta }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="parcial">
+                <th mat-header-cell *matHeaderCellDef class="text-center">
+                  Parcial
+                </th>
+                <td mat-cell *matCellDef="let paciente" class="text-center">
+                  {{ paciente.periodoParcial }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="dataInicial">
+                <th mat-header-cell *matHeaderCellDef class="text-center">
+                  Data Atendimento
+                </th>
+                <td mat-cell *matCellDef="let paciente" class="text-center">
+                  {{ paciente.dataAtendimento | date:'dd/MM/yyyy' }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="statusConta">
+                <th mat-header-cell *matHeaderCellDef class="text-center">
+                  Status Conta
+                </th>
+                <td mat-cell *matCellDef="let paciente" class="text-center">
+                 <span class="fechado" *ngIf="paciente.descricaoStatusConta == 'FECHADO'">{{ paciente.descricaoStatusConta }}</span>
+                 <span class="statusPendente" *ngIf="paciente.descricaoStatusConta != 'FECHADO'">{{ paciente.descricaoStatusConta }}</span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="statusValidade">
+                <th mat-header-cell *matHeaderCellDef class="text-center">
+                  Status Validade
+                </th>
+                <td mat-cell *matCellDef="let paciente" class="text-center">
+                  {{ paciente.descricaoStatusValidade | uppercase }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="edicaoConta">
+                <th mat-header-cell *matHeaderCellDef class="text-center">
+                  Editar Conta
+                </th>
+                <td mat-cell *matCellDef="let paciente" class="text-center">
+                  <i class="bi bi-pencil-square fs-5" [routerLink]="['/criar-conta']" [queryParams]="{ unidadeAtendimento: unidadeAtendimento,nroConta: paciente.numeroConta, idUsuario:idUsuario }"></i>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="colunas"></tr>
+              <tr mat-row *matRowDef="let row; columns: colunas"></tr>
+            </table>
+          </mat-tab>
+        </mat-tab-group>
+      </div>
+    </div>
+    <div class="row" *ngIf="this.contas != null">
+      <div class="col text-center" *ngIf="totalContas > 10">
+        <mat-paginator [length]="this.totalContas" [pageSize]="10" (page)="handlePageEvent($event)" id="paginador">
+        </mat-paginator>
+      </div>
+    </div>
+  </div>
+</body>

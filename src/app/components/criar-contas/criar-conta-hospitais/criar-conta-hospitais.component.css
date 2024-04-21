@@ -1,0 +1,148 @@
+.dark-theme{
+  color: var(--txt-color);
+  background-color: var(--bkg-cadastro-operadora);
+}
+
+#card{
+  color: var(--txt-color);
+  background-color: var(--bkg-card);
+}
+
+.teste{
+  width: 1100px;
+}
+
+.text {
+  margin-left: 7.5rem;
+}
+
+.icon{
+  padding: 8px;
+  border: #000 1px solid;
+  border-radius: 10px;
+}
+
+.form-select{
+  color: var(--txt-color);
+  background-color: var(--bkg-card);
+}
+
+.form-check-input{
+  color: var(--txt-color);
+  background-color: var(--bkg-check);
+}
+
+#select{
+  color: var(--txt-color);
+  background-color: var(--bkg-card);
+}
+
+.form-control{
+  color: var(--txt-color);
+  background-color: var(--bkg-card);
+}
+
+textarea{
+  color: var(--txt-color);
+  background-color: var(--bkg-card);
+}
+
+table{
+  color: var(--txt-color);
+  background-color: var(--bkg-card);
+}
+
+th{
+  color: var(--txt-color);
+  text-transform: uppercase;
+}
+
+td{
+  color: var(--txt-color);
+  text-transform: uppercase;
+}
+
+a{
+  color: black;
+}
+
+mat-tab-group{
+  margin-bottom: 4.375rem;
+}
+
+#btn-cobranca{
+  background-color: #073763;
+  color: white;
+}
+
+#btn-nota-debito{
+  background-color: #1B2F33;
+  color: white;
+}
+
+#tabela{
+  width: 75%;
+  margin: 0 auto;
+}
+
+th{
+  text-transform: uppercase;
+  border-bottom: 1px solid #aaaaaa;
+}
+
+#guia{
+  width: 200px;
+}
+
+#motivo-pendencia{
+  overflow: hidden;
+}
+
+td{
+  text-transform: uppercase;
+}
+
+#servicos{
+  overflow-x: hidden;
+}
+
+select{
+  margin: 0 auto;
+}
+
+textarea{
+  width: 100%;
+  height: 100px;
+}
+
+#btn-salvar{
+  background-color: #058288;
+}
+
+.corpo_clinico{
+  overflow-x: hidden;
+}
+
+.Inativos{
+  color: red;
+}
+
+#icone-x{
+ color: red;
+}
+
+#icone-check{
+  color: green;
+}
+
+.auto-complete{
+  width: 300px;
+}
+
+#servicos__data{
+  margin: 0 auto;
+}
+
+.card{
+  overflow: hidden;
+}

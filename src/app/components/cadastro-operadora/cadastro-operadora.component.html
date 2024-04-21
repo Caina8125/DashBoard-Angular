@@ -1,0 +1,211 @@
+<body [ngClass]="modoEscuroCadastroOperadora ? 'dark-theme' : ''">
+  <div class="container">
+    <div class="row">
+      <div class="col d-flex" id="voltar">
+        <div class="fs-2">
+          <a (click)="voltar()">
+            <i class="bi bi-arrow-left"></i>
+          </a>
+        </div>
+        <h1 class="text-center mt-2 ms-2">Início</h1>
+      </div>
+    </div>
+    <div class="card text-center shadow-lg" id="card">
+      <div class="row">
+        <div class="col">
+          <p class="fs-3 m-3">Criar operadora</p>
+        </div>
+      </div>
+      <form class="form-group p-3" (ngSubmit)="criarUnidadeOperadora(tabelaModal)">
+        <div class="row">
+          <div class="col">
+            <label class="form-label">Operadora</label>
+            <select class="form-select" [(ngModel)]="idOperadora" name="idNovaOperadora">
+              <option class="opcoes" *ngFor="let o of operadoras" [ngValue]="o.id">
+                {{ o.apelido | uppercase }}
+              </option>
+            </select>
+          </div>
+          <div class="col">
+            <label class="form-label">Código Externo</label>
+            <input class="form-control" type="text" [(ngModel)]="codigoExterno" name="codigoExterno"/>
+          </div>
+          <div class="col">
+            <label class="form-label">Código Interno</label>
+            <input class="form-control" type="text" [(ngModel)]="codigoInterno" name="codigoInterno"/>
+          </div>
+          <div class="col">
+            <label class="form-label">Apelido</label>
+            <input class="form-control" type="text" [(ngModel)]="apelido" name="apelido" />
+          </div>
+          <div class="col" *ngIf="this.unidadeAtendimento == 8 || this.unidadeAtendimento == 11">
+            <label class="form-label">Via de cobrança</label>
+            <select class="form-select" [(ngModel)]="viaCobranca" name="viaCobranca">
+              <option class="opcoes" *ngFor="let o of viaCobrancas" [ngValue]="o.id">
+                {{ o.name }}
+              </option>
+            </select>
+          </div>
+          <div class="col">
+            <button class="btn mt-4" type="submit" id="botao">Salvar</button>
+          </div>
+          <ng-template #tabelaModal>
+            <div class="row">
+              <div class="col text-center">
+                <mat-form-field appearance="fill" class="m-5 w-75">
+                  <mat-label>Tabelas</mat-label>
+                  <mat-select multiple [(ngModel)]="tabelasSelecionadas" name="tabelasSelecionadas" class="select">
+                    <mat-option *ngFor="let tabela of listaTabelas" [value]="tabela.id" id="select-tabela">{{ tabela.descricao }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <button type="button" class="btn m-5" id="botao-tabela" (click)="adicionarTabelaOperadora()">Salvar</button>
+              </div>
+            </div>
+          </ng-template>
+        </div>
+      </form>
+    </div>
+      <div class="row">
+        <div class="col" class="card mt-2 mb-5 shadow-lg" id="card">
+          <table mat-table [dataSource]="dataSourceUnidadeOperadoras">
+            <ng-container matColumnDef="apelido">
+              <th mat-header-cell *matHeaderCellDef>
+                Apelido
+              </th>
+              <td mat-cell *matCellDef="let operadora">
+                {{ operadora.apelido }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="nome">
+              <th mat-header-cell *matHeaderCellDef>
+                Convênio
+              </th>
+              <td mat-cell *matCellDef="let operadora">
+                {{ operadora.operadoraObject.nome }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="codigoInterno">
+              <th mat-header-cell *matHeaderCellDef class="text-center">
+                Código Interno
+              </th>
+              <td mat-cell *matCellDef="let operadora" class="text-center">
+                {{ operadora.codigoInterno }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="via">
+              <th mat-header-cell *matHeaderCellDef class="text-center">
+                Via de cobranca
+              </th>
+              <td mat-cell *matCellDef="let operadora" class="text-center">
+                <ng-container *ngIf="operadora.localContaObject?.descricao">
+                  {{ operadora.localContaObject.descricao }}
+                </ng-container>
+                <ng-container *ngIf="!operadora.localContaObject?.descricao">
+                  -
+                </ng-container>
+            </ng-container>
+
+            <ng-container matColumnDef="editar">
+              <th mat-header-cell *matHeaderCellDef class="text-center">
+                Editar
+              </th>
+              <td mat-cell *matCellDef="let operadora" class="text-center">
+                <button class="btn" (click)="open(editModal,operadora.id,operadora.idOperadora,operadora.codigoExterno,operadora.codigoInterno,operadora.apelido,operadora.localContaObject.id)" *ngIf="operadora.localContaObject?.descricao">
+                  <span class="fs-5">
+                    <i class="bi bi-pencil-square" matTooltip="Editar"></i>
+                  </span>
+                </button>
+                <button class="btn" (click)="open(editModal,operadora.id,operadora.idOperadora,operadora.codigoExterno,operadora.codigoInterno,operadora.apelido)" *ngIf="!operadora.localContaObject?.descricao">
+                  <span class="fs-5">
+                    <i class="bi bi-pencil-square" matTooltip="Editar"></i>
+                  </span>
+                </button>
+                <!-- <button class="btn" (click)="open(editarTabelaModal, operadora.id)">
+                  <span class="fs-5">
+                    <i class="bi bi-table" matTooltip="Editar Tabela"></i>
+                  </span>
+                </button>
+                <ng-template #editarTabelaModal>
+                  <div class="modal-header text-center">
+                    <h1 class="modal-title" id="modal-basic-title">
+                      Editar tabelas operadora
+                    </h1>
+                  </div>
+                  <div class="row">
+                    <div class="col text-center">
+                      <form appearance="fill" class="text-center m-3 w-75">
+                        <section class="example-section">
+                          <mat-checkbox *ngFor="let tabela of tabelas"
+                            [value]="tabela.idTabela.toString()"
+                            [(ngModel)]="tabelasSelecionadas"
+                            class="example-margin"
+                            [checked]="isTabelaSelecionada(tabela.idTabela)"
+                            (change)="toggleAtivo(tabela.idTabela)">
+                            {{ tabela.name }}
+                          </mat-checkbox>
+                        </section>
+                      </form>
+                      <button type="button" class="btn m-3" id="botao-tabela" (click)="editarTabelaOperadora()">Salvar</button>
+                    </div>
+                  </div> -->
+                <!-- </ng-template> -->
+                <ng-template #editModal>
+                  <div class="card p-5">
+                    <div class="row">
+                      <div class="col m-3 text-center">
+                        <label class="form-label fs-5">Código Operadora</label>
+                        <select class="form-select" [(ngModel)]="editIdUnidadeOperadora" name="editIdUnidadeOperadora">
+                          <option *ngFor="let o of operadoras" [ngValue]="o.id">
+                            {{ o.apelido }}
+                          </option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col m-3 text-center">
+                        <label class="form-label fs-5">Código Externo</label>
+                        <input class="form-control" type="text" [(ngModel)]="editCodigoExterno" name="editCodigoExterno"/>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col m-3 text-center">
+                        <label class="form-label fs-5">Código Interno</label>
+                        <input class="form-control" type="text" [(ngModel)]="editCodigoInterno" name="editCodigoInterno"/>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col m-3 text-center">
+                        <label class="form-label fs-5">Apelido</label>
+                        <input class="form-control" type="text" [(ngModel)]="editApelido" name="editApelido" />
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col m-3 text-center" *ngIf="this.unidadeAtendimento == 8 || this.unidadeAtendimento == 11">
+                        <label class="form-label fs-5">Via de cobrança</label>
+                        <select class="form-select" [(ngModel)]="viaCobranca" name="viaCobranca">
+                          <option *ngFor="let o of viaCobrancas" [ngValue]="o.id">
+                            {{ o.name }}
+                          </option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col text-center">
+                        <button class="btn btn-success mt-4" type="submit" (click)="editarOperadora()">Salvar</button>
+                      </div>
+                    </div>
+                  </div>
+                </ng-template>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="unidadeOperadoras"></tr>
+            <tr mat-row *matRowDef="let row; columns: unidadeOperadoras"></tr>
+          </table>
+        </div>
+      </div>
+  </div>
+</body>

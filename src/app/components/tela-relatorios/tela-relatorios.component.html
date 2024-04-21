@@ -1,0 +1,190 @@
+<body [ngClass]="modaEscuroRelatorios ? 'dark-theme' :''">
+  <div class="container">
+    <div class="row">
+      <div class="col d-flex">
+        <div class="fs-2">
+          <a (click)="this.voltar()">
+            <i class="bi bi-arrow-left"></i>
+          </a>
+        </div>
+        <h1 class="text-center mt-2 ms-2">Início</h1>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <mat-accordion>
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title class="fs-4">
+                Relatório de contas pendentes
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <label class="form-label fs-5">Usuário</label>
+            <select class="form-select w-25" [(ngModel)]="usuario1" name="usuario1">
+              <option *ngFor="let c of listaColaboradores" [ngValue]="c.id">
+                {{ c.nome }}
+              </option>
+            </select>
+            <button class="btn btn-success mt-3" (click)="gerarContasPendentes()">
+              Gerar Relatório
+            </button>
+            <div class="ms-5 mt-5">
+              <app-spinner></app-spinner>
+            </div>
+          </mat-expansion-panel>
+          <mat-expansion-panel class="mt-5">
+            <mat-expansion-panel-header>
+              <mat-panel-title class="fs-4">Relatório de contas pendentes por operadora</mat-panel-title>
+            </mat-expansion-panel-header>
+            <label class="form-label fs-5">Usuário</label>
+            <select class="form-select w-25" [(ngModel)]="usuario4" name="usuario1">
+              <option *ngFor="let c of listaColaboradores" [ngValue]="c.id">
+                {{ c.nome }}
+              </option>
+            </select>
+            <label class="form-label fs-5 mt-3">Operadora</label>
+            <select class="form-select w-25" [(ngModel)]="operadora2" name="operadora">
+              <option *ngFor="let u of listaUnidadeOperadoras" [ngValue]="u.id">
+                {{ u.apelido }}
+              </option>
+            </select>
+            <button class="btn btn-success mt-3" (click)="gerarContasPendentesPorOperadora()">
+              Gerar Relatório
+            </button>
+            <div class="ms-5 mt-5">
+              <app-spinner></app-spinner>
+            </div>
+          </mat-expansion-panel>
+          <mat-expansion-panel class="mt-5" *ngIf="this.unidadeAtendimento == 1">
+            <mat-expansion-panel-header>
+              <mat-panel-title class="fs-4">Relatório de guias na auditoria</mat-panel-title>
+            </mat-expansion-panel-header>
+            <label class="form-label fs-5">Status</label>
+            <select class="form-select w-25" [(ngModel)]="status" name="status">
+              <option *ngFor="let s of statusGuias" [ngValue]="s.id">
+                {{ s.name }}
+              </option>
+            </select>
+            <label class="form-label fs-5 mt-3">Operadora</label>
+            <select class="form-select w-25" [(ngModel)]="operadora" name="operadora">
+              <option *ngFor="let u of listaUnidadeOperadoras" [ngValue]="u.codigoInterno"
+              >
+                {{ u.apelido }}
+              </option>
+            </select>
+            <button
+              class="btn btn-success mt-3"
+              (click)="gerarGuiasAuditoria()"
+            >
+              Gerar Relatório
+            </button>
+            <div class="ms-5 mt-5">
+              <app-spinner></app-spinner>
+            </div>
+          </mat-expansion-panel>
+          <mat-expansion-panel class="mt-5">
+            <mat-expansion-panel-header>
+              <mat-panel-title class="fs-4">
+                Relatório de contas por motivo de pendência
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <label class="form-label fs-5">Usuário</label>
+            <select class="form-select w-25" [(ngModel)]="usuario2" name="usuario2">
+              <option *ngFor="let c of listaColaboradores" [ngValue]="c.id">
+                {{ c.nome }}
+              </option>
+            </select>
+            <label class="form-label fs-5 mt-3">Motivo Pendência</label>
+            <select class="form-select w-25" [(ngModel)]="motivoPendencia" name="motivoPendencia">
+              <option *ngFor="let m of listaMotivosPendencia" [ngValue]="m.id">
+                {{ m.descricao }}
+              </option>
+            </select>
+            <button class="btn btn-success mt-3" (click)="gerarGuiasMotivoPendencia()">
+              Gerar Relatório
+            </button>
+            <div class="ms-5 mt-5">
+              <app-spinner></app-spinner>
+            </div>
+          </mat-expansion-panel>
+          <mat-expansion-panel class="mt-5">
+            <mat-expansion-panel-header>
+              <mat-panel-title class="fs-4">
+                Relatório de Internações
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <button class="btn btn-success mt-3" (click)="gerarInternacoes()">
+              Gerar Relatório
+            </button>
+            <div class="ms-5 mt-5">
+              <app-spinner></app-spinner>
+            </div>
+          </mat-expansion-panel>
+          <mat-expansion-panel class="mt-5" *ngIf="this.unidadeAtendimento == 12">
+            <mat-expansion-panel-header>
+              <mat-panel-title class="fs-4">
+                Relatório de Cobranças Pendentes
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <button class="btn btn-success mt-3" (click)="gerarCobrancasPendentes()">
+              Gerar Relatório
+            </button>
+            <div class="ms-5 mt-5">
+              <app-spinner></app-spinner>
+            </div>
+          </mat-expansion-panel>
+          <mat-expansion-panel class="mt-5">
+            <mat-expansion-panel-header>
+              <mat-panel-title class="fs-4">
+                Relatório de Pendências Resolvidas
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <label class="form-label fs-5">Usuário</label>
+            <select class="form-select w-25" [(ngModel)]="usuario5" name="usuario2">
+              <option *ngFor="let c of listaColaboradores" [ngValue]="c.id">
+                {{ c.nome }}
+              </option>
+            </select>
+            <label class="form-label fs-5 mt-3">Motivo Pendência</label>
+            <select class="form-select w-25" [(ngModel)]="motivoPendencia1" name="motivoPendencia">
+              <option *ngFor="let m of listaMotivosPendencia" [ngValue]="m.id">
+                {{ m.descricao }}
+              </option>
+            </select>
+            <button class="btn btn-success mt-3" (click)="gerarPendenciasProntas()">
+              Gerar Relatório
+            </button>
+            <div class="ms-5 mt-5">
+              <app-spinner></app-spinner>
+            </div>
+          </mat-expansion-panel>
+          <mat-expansion-panel class="mt-5">
+            <mat-expansion-panel-header>
+              <mat-panel-title class="fs-4">
+                Relatório de contas por status
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <label class="form-label fs-5">Usuário</label>
+            <select class="form-select w-25" [(ngModel)]="usuario6" name="usuario6">
+              <option *ngFor="let c of listaColaboradores" [ngValue]="c.id">
+                {{ c.nome }}
+              </option>
+            </select>
+            <label class="form-label fs-5 mt-3">Status Pendência</label>
+            <select class="form-select w-25" [(ngModel)]="statusConta" name="statusConta">
+              <option *ngFor="let s of listaStatusConta" [ngValue]="s.id">
+                {{ s.descricao }}
+              </option>
+            </select>
+            <button class="btn btn-success mt-3" (click)="gerarContasPorStatus()">
+              Gerar Relatório
+            </button>
+            <div class="ms-5 mt-5">
+              <app-spinner></app-spinner>
+            </div>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>
+    </div>
+  </div>
+</body>

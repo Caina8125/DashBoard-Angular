@@ -1,0 +1,87 @@
+@import "~bootstrap-icons/font/bootstrap-icons.css";
+
+html {
+  box-sizing: border-box;
+  font-size: 16px;
+}
+
+*,*:before,*:after {
+  box-sizing: inherit;
+}
+
+body,h1,h2,h3,h4,h5,h6,p,ol,ul {
+  margin: 0;
+  padding: 0;
+  font-weight: normal;
+  overflow-x: hidden;
+}
+
+ol,ul {
+  list-style: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+html,body {
+  min-height: 100vh !important;
+}
+
+body{
+  --segundos: 1.1;
+  --bkg-card:#fff;
+  --txt-color:#222;
+  --text-color:#222;
+  --bkg-color: #fff;
+  --bkg-check : rgb(0, 81, 255);
+  --linha-cabecalho:#058288;
+  --bkg-tela-escolha: 65,89,142;
+  --btn-color-success: #198754;
+  --bkg-cadastro-operadora:#fff;
+  --bkg-tela-escolha-radial1: 65,89,142;
+  --bkg-tela-escolha-radial2: 140,155,176;
+}
+
+body .dark-theme{
+  --segundos: 0.0;
+  --txt-color:#fff;
+  --text-color:#fff;
+  --bkg-color: #617fc0;
+  --linha-cabecalho:#fff;
+  --bkg-tela-escolha:23,24,29;
+  --bkg-card:rgb(95, 95, 95);
+  --bkg-check : rgb(95, 95, 95);
+  --btn-color-success:rgb(0,86,77);
+  --bkg-tela-escolha-radial1:23,24,29;
+  --bkg-tela-escolha-radial2:10,45,86;
+  --bkg-cadastro-operadora:rgb(77, 77, 77);
+}
+
+.cabecalho_dark-theme{
+  --txt-color:#fff;
+  --bkg-color: #fff;
+  --linha-cabecalho:#fff;
+  --text-color:rgb(0, 0, 0);
+  --bkg-card:rgb(95, 95, 95);
+}
+
+mat-form-field{
+  color: var(--txt-color);
+  background-color: var(--bkg-card);
+}
+
+.modal-content{
+  width: fit-content
+}
+
+.cdk-global-overlay-wrapper, .cdk-overlay-container {
+  z-index: 99999 !important;
+}
+
+@media (min-width: 1800px) {
+  .container {
+    max-width: 106.25rem;
+  }
+}

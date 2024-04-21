@@ -1,0 +1,279 @@
+<body [ngClass]="modoEscuroEstatisticas ? 'dark-theme' :''">
+  <div class="container">
+    <div class="row">
+      <div class="col d-flex">
+        <div class="fs-2">
+          <a (click)="voltar()">
+            <i class="bi bi-arrow-left"></i>
+          </a>
+        </div>
+        <h1 class="text-center mt-2 ms-2">Início</h1>
+      </div>
+    </div>
+    <form [formGroup]="estatisticasForm" (ngSubmit)="retornaEstatisticas()">
+      <div class="row">
+        <div class="col mt-1">
+          <div class="form-check mt-4">
+            <input class="form-check-input" type="radio" formControlName="opcoes" value="1" checked id="internacoes"/>
+            <label class="form-check-label" for="internacoes"> Internações </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" formControlName="opcoes" value="2" id="contas"/>
+            <label class="form-check-label" for="contas"> Contas </label>
+          </div>
+          <!-- <div class="form-check">
+            <input class="form-check-input" type="radio" formControlName="opcoes" value="3" id="contas"/>
+            <label class="form-check-label" for="contas"> Ocupação </label>
+          </div> -->
+        </div>
+        <div class="col">
+          <label class="form-label fs-5">Convênios</label>
+          <select class="form-select" formControlName="operadora">
+            <option *ngFor="let u of listaUnidadeOperadoras" value="{{ u.id }}">
+              {{ u.apelido }}
+            </option>
+          </select>
+        </div>
+        <div class="col">
+          <label class="form-label fs-5">Usuário</label>
+          <select class="form-select" formControlName="usuario">
+            <option *ngFor="let c of listaColaboradores" value="{{ c.pessoaInclusao }}">
+              {{ c.nome }}
+            </option>
+          </select>
+        </div>
+        <div class="col" *ngIf="this.estatisticasForm.get('opcoes')?.value == 1">
+          <label class="form-label fs-5">Evolução</label>
+          <select class="form-select" formControlName="evolucao">
+            <option *ngFor="let e of evolucoes" value="{{ e.id }}">
+              {{ e.nome }}
+            </option>
+          </select>
+        </div>
+        <div class="col" *ngIf="this.estatisticasForm.get('opcoes')?.value == 2">
+          <label class="form-label fs-5">Status Conta</label>
+          <select class="form-select" formControlName="statusConta">
+            <option *ngFor="let s of statusConta" value="{{ s.id }}">
+              {{ s.nome }}
+            </option>
+          </select>
+        </div>
+        <div class="col">
+          <button class="btn" id="btn-buscar" type="submit">
+            Buscar
+            <i class="bi bi-search"></i>
+          </button>
+        </div>
+        <div class="col"
+          *ngIf="(this.dataSourceEstatisticaInternacaoEvolucao != undefined && this.dataSourceEstatisticaInternacaoOperadora != undefined &&
+                  this.dataSourceEstatisticaInternacaoUsuario != undefined) || (this.dataSourceEstatisticaContaStatus != undefined &&
+                  this.dataSourceEstatisticaContaOperadora && this.dataSourceEstatisticaContaUsuario)">
+          <button class="btn btn-secondary" id="btn-limpar-filtro" (click)="limparFiltro()">
+            Limpar Filtro
+          </button>
+        </div>
+      </div>
+    </form>
+    <div class="row mt-3">
+      <div class="col text-center">
+        <span *ngIf="this.estatisticasForm.get('opcoes')?.value == 1">
+          <p>
+            <b>
+              <span *ngIf="this.totalInternacoes">TOTAL DE </span>
+              INTERNAÇÕES
+              <span *ngIf="this.totalInternacoes">({{ this.totalInternacoes }})</span>
+            </b>
+          </p>
+        </span>
+        <div class="chart-container">
+          <canvas id="MyChart">{{ chart }}</canvas>
+        </div>
+        <span *ngIf="this.dataSourceEstatisticaInternacaoEvolucao != null">
+          <h1 class="text-center mt-5">Evolução</h1>
+          <table mat-table [dataSource]="dataSourceEstatisticaInternacaoEvolucao">
+            <ng-container matColumnDef="descricao">
+              <th mat-header-cell *matHeaderCellDef class="text-center fs-5">
+                Descrição
+              </th>
+              <td mat-cell *matCellDef="let objeto" class="fs-6">
+                {{ objeto.descricao }}
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="quantidade">
+              <th mat-header-cell *matHeaderCellDef class="text-center fs-5">
+                Quantidade
+              </th>
+              <td mat-cell *matCellDef="let objeto" class="fs-6">
+                {{ objeto.quantidade }}
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="colunasInternacao"></tr>
+            <tr mat-row *matRowDef="let row; columns: colunasInternacao"></tr>
+          </table>
+        </span>
+
+        <span *ngIf="this.dataSourceEstatisticaInternacaoEvolucao != null">
+          <h1 class="text-center mt-5">Convênios</h1>
+          <table mat-table [dataSource]="dataSourceEstatisticaInternacaoOperadora">
+            <ng-container matColumnDef="descricao">
+              <th mat-header-cell *matHeaderCellDef class="text-center fs-5">
+                Convênio
+              </th>
+              <td mat-cell *matCellDef="let objeto" class="fs-6">
+                {{ objeto.descricao }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="quantidade">
+              <th mat-header-cell *matHeaderCellDef class="text-center fs-5">
+                Quantidade
+              </th>
+              <td mat-cell *matCellDef="let objeto" class="fs-6">
+                {{ objeto.quantidade }}
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="colunasInternacao"></tr>
+            <tr mat-row *matRowDef="let row; columns: colunasInternacao"></tr>
+          </table>
+        </span>
+
+        <span *ngIf="this.dataSourceEstatisticaInternacaoEvolucao != null">
+          <h1 class="text-center mt-5">Colaboradores</h1>
+          <table mat-table [dataSource]="dataSourceEstatisticaInternacaoUsuario" class="mb-5">
+            <ng-container matColumnDef="descricao">
+              <th mat-header-cell *matHeaderCellDef class="text-center fs-5">
+                Usuário
+              </th>
+              <td mat-cell *matCellDef="let objeto" class="fs-6">
+                {{ objeto.descricao }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="quantidade">
+              <th mat-header-cell *matHeaderCellDef class="text-center fs-5">
+                Quantidade
+              </th>
+              <td mat-cell *matCellDef="let objeto" class="fs-6">
+                {{ objeto.quantidade }}
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="colunasInternacao"></tr>
+            <tr mat-row *matRowDef="let row; columns: colunasInternacao"></tr>
+          </table>
+        </span>
+
+        <span *ngIf="this.estatisticasForm.get('opcoes')?.value == 2">
+          <p>
+            <b>
+              <span *ngIf="this.totalContas">TOTAL DE </span>
+              CONTAS
+              <span *ngIf="this.totalContas">({{ this.totalContas }})</span>
+            </b>
+          </p>
+        </span>
+        <span *ngIf="this.dataSourceEstatisticaContaUsuario != null">
+          <h1 class="text-center mt-5">Local Checklist</h1>
+          <table mat-table [dataSource]="dataSourceLocalChecklist">
+            <ng-container matColumnDef="descricao">
+              <th mat-header-cell *matHeaderCellDef  class="text-center fs-5">
+                Descrição
+              </th>
+              <td mat-cell *matCellDef="let objeto" class="fs-6">
+                {{ objeto.descricao }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="quantidade">
+              <th mat-header-cell *matHeaderCellDef  class="text-center fs-5">
+                Quantidade
+              </th>
+              <td mat-cell *matCellDef="let objeto" class="fs-6">
+                {{ objeto.quantidade }}
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="colunasInternacao"></tr>
+            <tr mat-row *matRowDef="let row; columns: colunasInternacao"></tr>
+          </table>
+        </span>
+
+        <span *ngIf="this.dataSourceEstatisticaContaUsuario != null">
+          <h1 class="text-center mt-5">Evolução</h1>
+          <table mat-table [dataSource]="dataSourceEstatisticaContaStatus">
+            <ng-container matColumnDef="descricao">
+              <th mat-header-cell *matHeaderCellDef  class="text-center fs-5">
+                Descrição
+              </th>
+              <td mat-cell *matCellDef="let objeto" class="fs-6">
+                {{ objeto.descricao }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="quantidade">
+              <th mat-header-cell *matHeaderCellDef  class="text-center fs-5">
+                Quantidade
+              </th>
+              <td mat-cell *matCellDef="let objeto" class="fs-6">
+                {{ objeto.quantidade }}
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="colunasInternacao"></tr>
+            <tr mat-row *matRowDef="let row; columns: colunasInternacao"></tr>
+          </table>
+        </span>
+
+        <span *ngIf="this.dataSourceEstatisticaContaUsuario != null">
+          <h1 class="text-center mt-5">Convênios</h1>
+          <table mat-table [dataSource]="dataSourceEstatisticaContaOperadora">
+            <ng-container matColumnDef="descricao">
+              <th mat-header-cell *matHeaderCellDef  class="text-center fs-5">
+                Convênio
+              </th>
+              <td mat-cell *matCellDef="let objeto" class="fs-6">
+                {{ objeto.descricao }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="quantidade">
+              <th mat-header-cell *matHeaderCellDef  class="text-center fs-5">
+                Quantidade
+              </th>
+              <td mat-cell *matCellDef="let objeto" class="fs-6">
+                {{ objeto.quantidade }}
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="colunasInternacao"></tr>
+            <tr mat-row *matRowDef="let row; columns: colunasInternacao"></tr>
+          </table>
+        </span>
+
+        <span *ngIf="this.dataSourceEstatisticaContaUsuario != null">
+          <h1 class="text-center mt-5">Colaboradores</h1>
+          <table mat-table [dataSource]="dataSourceEstatisticaContaUsuario" class="mb-5">
+            <ng-container matColumnDef="descricao">
+              <th mat-header-cell *matHeaderCellDef class="text-center fs-5">
+                Usuário
+              </th>
+              <td mat-cell *matCellDef="let objeto" class="fs-6">
+                {{ objeto.descricao }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="quantidade">
+              <th mat-header-cell *matHeaderCellDef class="text-center fs-5">
+                Quantidade
+              </th>
+              <td mat-cell *matCellDef="let objeto" class="fs-6">
+                {{ objeto.quantidade }}
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="colunasInternacao"></tr>
+            <tr mat-row *matRowDef="let row; columns: colunasInternacao"></tr>
+          </table>
+        </span>
+      </div>
+    </div>
+  </div>
+</body>

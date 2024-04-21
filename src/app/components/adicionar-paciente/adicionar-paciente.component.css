@@ -1,0 +1,13 @@
+a{
+  color: black;
+}
+
+form{
+  display: grid;
+  text-align: center;
+  justify-content: center;
+}
+
+input{
+  width: 300px;
+}

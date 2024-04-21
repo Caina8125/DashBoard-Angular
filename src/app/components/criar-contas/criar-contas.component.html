@@ -1,0 +1,5 @@
+<app-criar-conta-hospitais *ngIf="unidadeAtendimento != 8 && unidadeAtendimento != 11; else cti" [dadosConta]="dadosConta"></app-criar-conta-hospitais>
+
+<ng-template #cti>
+  <app-criar-conta-cti [dadosConta]="dadosConta"></app-criar-conta-cti>
+</ng-template>

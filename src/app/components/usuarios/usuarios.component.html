@@ -1,0 +1,24 @@
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col mt-5 shadow-lg">
+        <mat-accordion>
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title class="fs-4">Excluir Usuários</mat-panel-title>
+            </mat-expansion-panel-header>
+            <form class="text-center" (ngSubmit)="removerUsuario()">
+              <label class="form-label fs-5">Usuário</label>
+              <select class="form-select w-50" [(ngModel)]="usuario" name="usuario">
+                <option *ngFor="let u of Usuarios" [ngValue]="u.id">
+                  {{ u.nome }}
+                </option>
+              </select>
+              <button class="btn btn-secondary mt-3">Apagar</button>
+            </form>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>
+    </div>
+  </div>
+</body>

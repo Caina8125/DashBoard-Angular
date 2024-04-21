@@ -1,0 +1,9 @@
+#card{
+  overflow: hidden;
+  color: var(--txt-color);
+  background-color: var(--bkg-card);
+}
+
+#btn-salvar{
+  background-color: #058288;
+}

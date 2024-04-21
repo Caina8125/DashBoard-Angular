@@ -1,0 +1,39 @@
+<body [className]="verificaRota() ? 'admin' : 'body'">
+  <div class="container">
+    <div class="row row-form">
+      <div class="col" id="formulario">
+        <form class="card shadow-lg" (ngSubmit)="login()">
+          <p class="text-center">
+            <b>Inicie a sessão</b>
+          </p>
+
+          <div class="mb-3 text-center form-group">
+            <label class="form-label">Usuário</label>
+            <input type="text" class="form-control" [(ngModel)]="usuario" name="usuario"/>
+          </div>
+
+          <div class="mb-3 text-center form-group">
+            <label class="form-label">Senha</label>
+            <input type="password" class="form-control" [(ngModel)]="senha" name="senha"/>
+          </div>
+
+          <div class="mb-3 text-center form-group" *ngIf="this.autenticado">
+            <label class="form-label">Unidade</label>
+            <select class="form-select" [(ngModel)]="unidade" name="unidade" (ngModelChange)="navegar()">
+              <option *ngFor="let u of unidades" [ngValue]="u.unidadeAtendimentoObject.id">
+                {{ u.unidadeAtendimentoObject.nome }}
+              </option>
+            </select>
+          </div>
+
+          <div class="text-center" *ngIf="this.autenticado == false">
+            <button type="submit" class="btn">Entrar</button>
+          </div>
+          <div class="spinner mt-3">
+            <app-spinner></app-spinner>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>

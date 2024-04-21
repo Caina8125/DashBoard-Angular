@@ -1,0 +1,49 @@
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col d-flex">
+        <div class="fs-2 mt-2">
+          <a [routerLink]="['/cti/home']">
+            <i class="bi bi-arrow-left"></i>
+          </a>
+        </div>
+        <h1 class="text-center m-3">Adicionar Paciente</h1>
+      </div>
+      <div class="card shadow-lg">
+        <form (ngSubmit)="adicionarPaciente()" class="m-3">
+          <div class="row">
+            <div class="col">
+              <label class="form-label mt-3">Atendimento</label>
+              <input type="text" class="form-control" placeholder="Atendimento" [(ngModel)]="atendimento" name="atendimento"/>
+
+              <label class="form-label mt-3">Nome do paciente</label>
+              <input type="text" class="form-control" placeholder="Nome do paciente" [(ngModel)]="nomePaciente" name="nomePaciente"/>
+
+              <label class="form-label mt-3">Convênio</label>
+              <input type="text" class="form-control" placeholder="Convênio" [(ngModel)]="convenio" name="convenio"/>
+            </div>
+            <div class="col">
+              <label class="form-label mt-3">Leito</label>
+              <input type="text" class="form-control" [(ngModel)]="leito" name="leito"/>
+
+              <label class="form-label mt-3">Status</label>
+              <select class="form-select" [(ngModel)]="statusPaciente" name="statusPaciente">
+                <option *ngFor="let s of Status" [ngValue]="s.id">
+                  {{ s.nome }}
+                </option>
+              </select>
+
+              <label class="form-label mt-3">Data de Internção</label>
+              <input type="date" class="form-control" [(ngModel)]="dataInternacao" name="dataInternacao"/>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <button class="btn btn-success mt-5" type="submit">Salvar</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>

@@ -1,0 +1,18 @@
+#card{
+  overflow: hidden;
+  color: var(--txt-color);
+  background-color: var(--bkg-card);
+}
+
+.form-control{
+  color: var(--txt-color);
+  background-color: var(--bkg-card);
+}
+
+#servicos__data{
+  margin: 0 auto;
+}
+
+#btn-salvar{
+  background-color: #058288;
+}

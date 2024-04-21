@@ -1,0 +1,59 @@
+.dark-theme{
+  background-color: var(--bkg-cadastro-operadora);
+}
+
+#voltar{
+  color: var(--txt-color);
+}
+
+#card{
+  width: 75rem;
+  margin: 0 auto;
+  color: var(--txt-color);
+  background-color: var(--bkg-card);
+}
+
+.form-select{
+  background-color: var(--bkg-card);
+}
+
+#select-tabela{
+  z-index: 10000000000;
+}
+
+.opcoes{
+  color: var(--txt-color);
+}
+
+.form-control{
+  background-color: var(--bkg-card);
+}
+
+#botao{
+  background-color: var(--btn-color-success);
+  color: white;
+}
+
+#botao-tabela{
+  background-color: var(--btn-color-success);
+  color: white;
+}
+
+table{
+  color: var(--txt-color);
+  background-color: var(--bkg-card);
+}
+
+th{
+  color: var(--txt-color);
+  text-transform: uppercase;
+}
+
+td{
+  color: var(--txt-color);
+  text-transform: uppercase;
+}
+
+i{
+  color: var(--txt-color);
+}

@@ -1,0 +1,55 @@
+body{
+  background: rgb(var(--bkg-tela-escolha-radial1));
+  background: radial-gradient(circle, rgba(var(--bkg-tela-escolha-radial1),1), rgba(var(--bkg-tela-escolha-radial2),1));
+}
+
+body .dark-theme{
+  background: rgb(var(--bkg-tela-escolha-radial1));
+  background: radial-gradient(circle, rgba(var(--bkg-tela-escolha-radial1),1), rgba(var(--bkg-tela-escolha-radial2),1));
+}
+
+.row{
+  height: 30vh;;
+}
+
+.col{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card{
+  width: 9.375rem;
+  height: 9.375rem;
+  transform: scale(1.1);
+  background-color: var(--bkg-card);
+}
+
+p{
+  color: var(--text-color);
+}
+
+.card:hover{
+  transform: scale(1.2);
+  transition: all 0.2s;
+}
+
+a{
+  text-decoration: none;
+  color: black;
+}
+
+i{
+  font-size: 60px;
+  color: var(--text-color);
+}
+
+fa-icon{
+  font-size: 60px;
+  color: var(--text-color);
+}
+
+button{
+  margin-top: 0.625rem;
+  width: 12.5rem;
+}

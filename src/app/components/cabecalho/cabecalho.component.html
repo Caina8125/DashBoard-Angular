@@ -1,0 +1,57 @@
+<div class="p-2" [ngClass]="modoEscuro ? 'cabecalho_dark-theme' : 'cabecalho'">
+  <div class="row">
+    <div class="col">
+      <a [routerLink]="['/tela-de-escolha']" [queryParams]="{ unidadeAtendimento: unidadeAtendimento, idUsuario: idUsuario }">
+        <img src="assets/imagens/logo.png" alt="Logo Amhp" class="logo-amhp"/>
+      </a>
+    </div>
+    <div class="col fs-5 text-center mt-4">
+        <span *ngIf="this.unidadeAtendimento">
+          {{ label }}
+        </span>
+        <span *ngIf="this.unidadeAtendimento == 8">
+          CTI(Sul)
+        </span>
+        <span *ngIf="this.unidadeAtendimento == 1">
+          Santa Marta
+        </span>
+        <span *ngIf="this.unidadeAtendimento == 4">
+          Santa Lúcia Sul
+        </span>
+        <span *ngIf="this.unidadeAtendimento == 2">
+          Santa Lúcia Norte
+        </span>
+        <span *ngIf="this.unidadeAtendimento == 3">
+          Home
+        </span>
+        <span *ngIf="this.unidadeAtendimento == 11">
+          CTI(Norte)
+        </span>
+        <span *ngIf="this.unidadeAtendimento == 12">
+          Gama
+        </span>
+        <span *ngIf="this.unidadeAtendimento == 13">
+          Anchieta
+        </span>
+        <span *ngIf="this.unidadeAtendimento == 9">
+          São Francisco
+        </span>
+        <span *ngIf="this.unidadeAtendimento == 7">
+          Santa Luzia
+        </span>
+        <span *ngIf="this.unidadeAtendimento == 6">
+          Santa Helena
+        </span>
+    </div>
+    <div class="col text-end" *ngIf="this.unidadeAtendimento != null">
+      <span class="m-5">
+        <i class="bi bi-moon-fill" *ngIf="!modoEscuro" [(ngModel)]="modoEscuro" (click)="changeTheme()"></i>
+        <i class="bi bi-brightness-high-fill" *ngIf="modoEscuro" [(ngModel)]="modoEscuro" (click)="changeTheme()"></i>
+      </span>
+      <button class="btn mt-1 me-4" (click)="logout()">
+        <span class="me-1">SAIR</span>
+        <i class="bi bi-box-arrow-right"></i>
+      </button>
+    </div>
+  </div>
+</div>

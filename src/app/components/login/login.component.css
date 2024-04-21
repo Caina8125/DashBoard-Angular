@@ -1,0 +1,42 @@
+.body {
+  background: rgb(65,89,142);
+  background: radial-gradient(circle, rgb(65, 89, 142) 0%, rgba(140,155,176,1) 100%);
+  background-size: 100%;
+}
+
+.admin{
+  background: rgb(0,0,0);
+  background: radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(29,64,104,1) 100%);
+  background-size: 100%;
+}
+
+form {
+  margin: 0 auto;
+  padding: 10px;
+  /* position: absolute; */
+  /* bottom: 17%; */
+  left: 0;
+  right: 0;
+  width: 18.75rem;
+}
+
+p {
+  font-size: 1.5625rem;
+}
+
+.btn{
+  background-color:rgb(37, 43, 60);
+  color: white;
+  border-radius: 1.25rem;
+}
+
+.spinner {
+  margin: 0 auto;
+}
+
+.row-form {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

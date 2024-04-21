@@ -1,0 +1,43 @@
+<h3 class="ms-3">Historico da internação</h3>
+<table mat-table [dataSource]="dataSourceAuditoria">
+  <ng-container matColumnDef="usuario">
+    <th mat-header-cell *matHeaderCellDef class="text-center">Usuário</th>
+    <td mat-cell *matCellDef="let historico" class="text-center">
+      {{ historico.pessoaInclusao }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="valorAlterado">
+    <th mat-header-cell *matHeaderCellDef class="text-center">
+      Valor Alterado
+    </th>
+    <td mat-cell *matCellDef="let historico" class="text-center">
+      {{ historico.coluna }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="antigo">
+    <th mat-header-cell *matHeaderCellDef class="text-center">Valor Antigo</th>
+    <td mat-cell *matCellDef="let historico" class="text-center">
+      {{ historico.antigo }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="novo">
+    <th mat-header-cell *matHeaderCellDef class="text-center">Valor novo</th>
+    <td mat-cell *matCellDef="let historico" class="text-center">
+      {{ historico.novo }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="data">
+    <th mat-header-cell *matHeaderCellDef class="text-center">
+      Data Alteração
+    </th>
+    <td mat-cell *matCellDef="let historico" class="text-center">
+      {{ historico.dataCriacao | date : "dd/MM/yyyy HH:mm"}}
+    </td>
+  </ng-container>
+  <tr mat-header-row *matHeaderRowDef="colunasAuditoria"></tr>
+  <tr mat-row *matRowDef="let row; columns: colunasAuditoria"></tr>
+</table>
